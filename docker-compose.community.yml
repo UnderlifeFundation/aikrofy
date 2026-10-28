@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Base de Datos MariaDB local
+  db:
+    image: mariadb:10.11
+    container_name: aikrofy-community-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: aikrofy_root_pass
+      MYSQL_DATABASE: aikrofy_community
+      MYSQL_USER: aikrofy_user
+      MYSQL_PASSWORD: aikrofy_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Redis para colas y caché ligero
+  redis:
+    image: redis:7-alpine
+    container_name: aikrofy-community-redis
+    restart: unless-stopped
+    ports:
+      - "6381:6379"
+
+  # Backend FastAPI de Aikrofy
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aikrofy-community-backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=mysql+pymysql://aikrofy_user:aikrofy_pass@db:3306/aikrofy_community
+      - REDIS_URL=redis://redis:6379/0
+      - AIKROFY_DEPLOYMENT_MODE=community
+      - SECRET_KEY=community_secret_key_aikrofy_underlife
+      - JWT_SECRET_KEY=community_jwt_key_aikrofy_underlife
+    ports:
+      - "5010:5010"
+    depends_on:
+      - db
+      - redis
+
+  # Microservicio WhatsApp Community (Single-Account vía @agenticnucleus/whatsapp-multitenant)
+  api-whatsapp:
+    build:
+      context: ./api-whatsapp
+      dockerfile: Dockerfile
+    container_name: aikrofy-community-whatsapp
+    restart: unless-stopped
+    ports:
+      - "3011:3011"
+    environment:
+      - PORT=3011
+      - COMMUNITY_COMPANY_ID=1
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=aikrofy_user
+      - DB_PASSWORD=aikrofy_pass
+      - DB_NAME=aikrofy_community
+      - BACKEND_URL=http://backend:5010
+      - WEBHOOK_PATH=/api/webhooks/whatsapp/baileys
+    depends_on:
+      - backend
+
+volumes:
+  db_data:

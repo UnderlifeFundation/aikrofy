@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Aikrofy{% endblock %}
+{% block header_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Stats Grid -->
+    <div class="stats-grid mb-lg">
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i data-lucide="message-circle"></i>
+            </div>
+            <div class="stat-value" id="totalConversations">0</div>
+            <div class="stat-label">Total Conversations</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i data-lucide="plug"></i>
+            </div>
+            <div class="stat-value" id="connectedChannels">0</div>
+            <div class="stat-label">Connected Channels</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i data-lucide="file-text"></i>
+            </div>
+            <div class="stat-value" id="indexedDocuments">0</div>
+            <div class="stat-label">Indexed Documents</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i data-lucide="calendar-check"></i>
+            </div>
+            <div class="stat-value" id="totalAppointments">0</div>
+            <div class="stat-label">Appointments (30d)</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon teal">
+                <i data-lucide="dollar-sign"></i>
+            </div>
+            <div class="stat-value" id="totalRevenue">$0</div>
+            <div class="stat-label">Revenue (30d)</div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-lg);">
+        <!-- Center Column: Funnel -->
+        <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+
+            <!-- Sales Funnel - Large -->
+            <div class="card" style="min-height: 400px;">
+                <div class="card-header">
+                    <h3 class="card-title">Sales Funnel</h3>
+                    <a href="/analytics" class="btn btn-sm btn-ghost">See Details</a>
+                </div>
+                <div class="card-body" style="height: 350px;">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Quick Actions & Status -->
+        <div>
+            <!-- Agent Status -->
+            <div class="card mb-lg">
+                <div class="card-header">
+                    <h3 class="card-title">Agent Status</h3>
+                </div>
+                <div class="card-body" id="agentStatus">
+                    <div class="empty-state">
+                        <i data-lucide="bot" class="empty-state-icon"></i>
+                        <h4 class="empty-state-title">No agents configured</h4>
+                        <p class="empty-state-text">Create your first agent to get started.</p>
+                        <a href="/agents" class="btn btn-primary">Configure Agents</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Channel & Integration Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Integrations</h3>
+                </div>
+                <div class="card-body" id="channelStatus">
+                    <div class="flex flex-col gap-md">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-sm">
+                                <i data-lucide="message-circle" style="color: #25D366;"></i>
+                                <span>WhatsApp</span>
+                            </div>
+                            <span class="badge badge-warning" id="whatsappStatus">Not Connected</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-sm">
+                                <i data-lucide="phone"></i>
+                                <span>Voice Calls</span>
+                            </div>
+                            <span class="badge badge-warning" id="voiceStatus">Not Connected</span>
+                        </div>
+                        <hr style="border-color: rgba(255,255,255,0.1); margin: 0.5rem 0;">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-sm">
+                                <i data-lucide="calendar" style="color: #4285F4;"></i>
+                                <span>Google Calendar</span>
+                            </div>
+                            <span class="badge badge-warning" id="googleCalendarStatus">Not Connected</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-sm">
+                                <i data-lucide="database" style="color: #FF7A59;"></i>
+                                <span>HubSpot CRM</span>
+                            </div>
+                            <span class="badge badge-warning" id="hubspotStatus">Not Connected</span>
+                        </div>
+                    </div>
+                    <div class="mt-lg">
+                        <a href="/channels" class="btn btn-sm btn-secondary w-full">Manage Channels</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    async function loadDashboard() {
+        try {
+            const data = await API.get('/analytics/dashboard');
+
+            if (data.overview) {
+                document.getElementById('totalConversations').textContent = data.overview.total_conversations;
+            }
+
+            if (data.channels) {
+                document.getElementById('connectedChannels').textContent = data.channels.connected;
+                data.channels.list.forEach(channel => {
+                    const statusEl = document.getElementById(`${channel.type}Status`);
+                    if (statusEl) {
+                        if (channel.status === 'connected') {
+                            statusEl.textContent = 'Connected';
+                            statusEl.className = 'badge badge-success';
+                        }
+                    }
+                });
+            }
+
+            if (data.documents) {
+                document.getElementById('indexedDocuments').textContent = data.documents.indexed;
+            }
+
+            if (data.integrations) {
+                const setStatus = (id, connected) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = connected ? 'Connected' : 'Not Connected';
+                        el.className = connected ? 'badge badge-success' : 'badge badge-warning';
+                    }
+                };
+                setStatus('googleCalendarStatus', data.integrations.google_calendar?.connected);
+                setStatus('hubspotStatus', data.integrations.hubspot?.connected);
+            }
+
+            if (data.agents && data.agents.list.length > 0) {
+                const agentContainer = document.getElementById('agentStatus');
+                agentContainer.innerHTML = data.agents.list.map(agent => `
+                    <div class="flex items-center justify-between mb-sm">
+                        <div class="flex items-center gap-sm">
+                            <i data-lucide="bot"></i>
+                            <span>${agent.name}</span>
+                        </div>
+                        <span class="badge ${agent.status === 'active' ? 'badge-success' : 'badge-warning'}">${agent.status}</span>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            }
+
+            // Load summary stats
+            loadSummaryStats();
+
+            // Load Funnel
+            loadFunnelChart();
+
+        } catch (e) {
+            console.log('Dashboard data will load once authenticated');
+        }
+    }
+
+    async function loadSummaryStats() {
+        try {
+            const data = await API.get('/analytics/summary?days=30');
+            document.getElementById('totalAppointments').textContent = data.appointments || 0;
+
+            const revenue = data.total_revenue || 0;
+            document.getElementById('totalRevenue').textContent = '$' + revenue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        } catch (e) {
+            console.log('Error loading summary stats');
+        }
+    }
+
+    async function loadFunnelChart() {
+        try {
+            const funnelData = await API.get('/analytics/funnel');
+
+            if (funnelData.funnel) {
+                const ctx = document.getElementById('funnelChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: funnelData.funnel.map(item => item.stage),
+                        datasets: [{
+                            label: 'Users',
+                            data: funnelData.funnel.map(item => item.count),
+                            backgroundColor: [
+                                'rgba(99, 102, 241, 0.8)',
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(14, 165, 233, 0.8)',
+                                'rgba(20, 184, 166, 0.8)',
+                                'rgba(34, 197, 94, 0.8)',
+                                'rgba(16, 185, 129, 0.9)'
+                            ],
+                            borderWidth: 0,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.9)',
+                                    font: { size: 12 }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        } catch (e) {
+            console.log('Error loading funnel chart');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDashboard();
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

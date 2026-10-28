@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aikrofy - Voice Agent Test</title>
+    <!-- LiveKit Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        button:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .visualizer {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 2rem;
+        }
+
+        .bar {
+            width: 5px;
+            height: 10px;
+            background: #3b82f6;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                height: 10px;
+                opacity: 0.5;
+            }
+
+            50% {
+                height: 30px;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎙️ Aikrofy Voice Agent</h1>
+        <p>Talk to your AI Agent in real-time</p>
+
+        <button id="connectBtn">Connect to Agent</button>
+        <button id="disconnectBtn" style="display:none; background:#ef4444;">Disconnect</button>
+
+        <div id="status">Ready to connect...</div>
+
+        <div class="visualizer" id="visualizer" style="opacity:0">
+            <div class="bar" style="animation-delay: 0s"></div>
+            <div class="bar" style="animation-delay: 0.1s"></div>
+            <div class="bar" style="animation-delay: 0.2s"></div>
+            <div class="bar" style="animation-delay: 0.3s"></div>
+            <div class="bar" style="animation-delay: 0.4s"></div>
+        </div>
+    </div>
+
+    <script>
+        let room;
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const status = document.getElementById('status');
+        const visualizer = document.getElementById('visualizer');
+
+        // Check auth
+        const token = localStorage.getItem('token');
+        if (!token) {
+            status.innerHTML = '⚠️ Not authenticated. Please login to Aikrofy first.';
+            connectBtn.disabled = true;
+        }
+
+        connectBtn.onclick = async () => {
+            connectBtn.disabled = true;
+            status.innerText = "Connecting...";
+
+            try {
+                // 1. Get Token from Backend
+                const resp = await fetch('/api/livekit/token', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!resp.ok) throw new Error("Failed to get token");
+                const data = await resp.json();
+
+                // 2. Connect to LiveKit
+                room = new LivekitClient.Room({
+                    adaptiveStream: true,
+                    dynacast: true,
+                });
+
+                await room.connect(data.url, data.token);
+                status.innerText = `Connected to room: ${data.room}`;
+
+                // 3. Enable Microphone
+                await room.localParticipant.setMicrophoneEnabled(true);
+                status.innerText += "\nMicrophone active 🎙️";
+
+                // UI Updates
+                visualizer.style.opacity = 1;
+                connectBtn.style.display = 'none';
+                disconnectBtn.style.display = 'inline-block';
+
+                // Handle Disconnect
+                room.on(LivekitClient.RoomEvent.Disconnected, () => {
+                    resetUI();
+                    status.innerText = "Disconnected.";
+                });
+
+            } catch (e) {
+                console.error(e);
+                status.innerText = `Error: ${e.message}`;
+                connectBtn.disabled = false;
+            }
+        };
+
+        disconnectBtn.onclick = () => {
+            if (room) room.disconnect();
+        };
+
+        function resetUI() {
+            visualizer.style.opacity = 0;
+            connectBtn.style.display = 'inline-block';
+            connectBtn.disabled = false;
+            disconnectBtn.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

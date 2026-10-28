@@ -1,0 +1,1030 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Aikrofy{% endblock %}
+{% block header_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <!-- Company Settings -->
+    <div class="card mb-lg">
+        <div class="card-header">
+            <h3 class="card-title">Company Settings</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                <div class="form-group">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-input" id="companyName">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Industry</label>
+                    <input type="text" class="form-input" id="industry" placeholder="e.g., E-commerce, Healthcare">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="companyEmail">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="text" class="form-input" id="companyPhone">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Website</label>
+                    <input type="url" class="form-input" id="companyWebsite" placeholder="https://yourcompany.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-input" id="companyCountry" placeholder="e.g., United States">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-input" id="companyCity" placeholder="e.g., New York">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Timezone</label>
+                    <select class="form-select" id="timezone">
+                        <optgroup label="UTC-12 to UTC-9">
+                            <option value="Etc/GMT+12">UTC-12:00 (Baker Island)</option>
+                            <option value="Pacific/Midway">UTC-11:00 (Midway, Samoa)</option>
+                            <option value="Pacific/Honolulu">UTC-10:00 (Hawaii)</option>
+                            <option value="Pacific/Marquesas">UTC-09:30 (Marquesas)</option>
+                            <option value="America/Anchorage">UTC-09:00 (Alaska)</option>
+                        </optgroup>
+                        <optgroup label="UTC-8 to UTC-5 (Americas)">
+                            <option value="America/Los_Angeles">UTC-08:00 (Los Angeles, Vancouver)</option>
+                            <option value="America/Phoenix">UTC-07:00 (Arizona, sin horario verano)</option>
+                            <option value="America/Denver">UTC-07:00 (Denver, Mountain Time)</option>
+                            <option value="America/Chicago">UTC-06:00 (Chicago, México CDMX)</option>
+                            <option value="America/Mexico_City">UTC-06:00 (Ciudad de México)</option>
+                            <option value="America/Bogota">UTC-05:00 (Bogotá, Lima, Quito)</option>
+                            <option value="America/Guayaquil">UTC-05:00 (Ecuador)</option>
+                            <option value="America/Lima">UTC-05:00 (Perú)</option>
+                            <option value="America/New_York">UTC-05:00 (New York, Eastern)</option>
+                            <option value="America/Panama">UTC-05:00 (Panamá)</option>
+                        </optgroup>
+                        <optgroup label="UTC-4 to UTC-3 (Americas)">
+                            <option value="America/Caracas">UTC-04:00 (Venezuela)</option>
+                            <option value="America/La_Paz">UTC-04:00 (Bolivia)</option>
+                            <option value="America/Santiago">UTC-04:00 (Chile)</option>
+                            <option value="America/Santo_Domingo">UTC-04:00 (Rep. Dominicana)</option>
+                            <option value="America/Puerto_Rico">UTC-04:00 (Puerto Rico)</option>
+                            <option value="America/Buenos_Aires">UTC-03:00 (Argentina)</option>
+                            <option value="America/Sao_Paulo">UTC-03:00 (Brasil, São Paulo)</option>
+                            <option value="America/Montevideo">UTC-03:00 (Uruguay)</option>
+                            <option value="America/Asuncion">UTC-04:00 (Paraguay)</option>
+                        </optgroup>
+                        <optgroup label="UTC-2 to UTC+0">
+                            <option value="Atlantic/South_Georgia">UTC-02:00 (Georgia del Sur)</option>
+                            <option value="Atlantic/Azores">UTC-01:00 (Azores)</option>
+                            <option value="Atlantic/Cape_Verde">UTC-01:00 (Cabo Verde)</option>
+                            <option value="UTC">UTC+00:00 (UTC - Coordinado)</option>
+                            <option value="Europe/London">UTC+00:00 (Londres, GMT)</option>
+                            <option value="Africa/Casablanca">UTC+00:00 (Marruecos)</option>
+                        </optgroup>
+                        <optgroup label="UTC+1 to UTC+3 (Europa/África)">
+                            <option value="Europe/Madrid">UTC+01:00 (España)</option>
+                            <option value="Europe/Paris">UTC+01:00 (Francia, Alemania, Italia)</option>
+                            <option value="Europe/Berlin">UTC+01:00 (Alemania)</option>
+                            <option value="Africa/Lagos">UTC+01:00 (Nigeria)</option>
+                            <option value="Europe/Athens">UTC+02:00 (Grecia)</option>
+                            <option value="Africa/Cairo">UTC+02:00 (Egipto)</option>
+                            <option value="Africa/Johannesburg">UTC+02:00 (Sudáfrica)</option>
+                            <option value="Europe/Istanbul">UTC+03:00 (Turquía)</option>
+                            <option value="Europe/Moscow">UTC+03:00 (Moscú, Rusia)</option>
+                            <option value="Asia/Riyadh">UTC+03:00 (Arabia Saudita)</option>
+                            <option value="Africa/Nairobi">UTC+03:00 (Kenia)</option>
+                        </optgroup>
+                        <optgroup label="UTC+4 to UTC+6 (Asia)">
+                            <option value="Asia/Dubai">UTC+04:00 (Emiratos Árabes)</option>
+                            <option value="Asia/Kabul">UTC+04:30 (Afganistán)</option>
+                            <option value="Asia/Karachi">UTC+05:00 (Pakistán)</option>
+                            <option value="Asia/Kolkata">UTC+05:30 (India)</option>
+                            <option value="Asia/Kathmandu">UTC+05:45 (Nepal)</option>
+                            <option value="Asia/Dhaka">UTC+06:00 (Bangladesh)</option>
+                            <option value="Asia/Almaty">UTC+06:00 (Kazajistán)</option>
+                        </optgroup>
+                        <optgroup label="UTC+7 to UTC+9 (Asia)">
+                            <option value="Asia/Bangkok">UTC+07:00 (Tailandia, Vietnam)</option>
+                            <option value="Asia/Jakarta">UTC+07:00 (Indonesia Oeste)</option>
+                            <option value="Asia/Singapore">UTC+08:00 (Singapur, Malasia)</option>
+                            <option value="Asia/Hong_Kong">UTC+08:00 (Hong Kong)</option>
+                            <option value="Asia/Shanghai">UTC+08:00 (China)</option>
+                            <option value="Asia/Manila">UTC+08:00 (Filipinas)</option>
+                            <option value="Asia/Tokyo">UTC+09:00 (Japón)</option>
+                            <option value="Asia/Seoul">UTC+09:00 (Corea del Sur)</option>
+                        </optgroup>
+                        <optgroup label="UTC+10 to UTC+14 (Oceanía)">
+                            <option value="Australia/Sydney">UTC+10:00 (Australia Este)</option>
+                            <option value="Australia/Melbourne">UTC+10:00 (Melbourne)</option>
+                            <option value="Pacific/Guam">UTC+10:00 (Guam)</option>
+                            <option value="Australia/Adelaide">UTC+09:30 (Australia Central)</option>
+                            <option value="Pacific/Noumea">UTC+11:00 (Nueva Caledonia)</option>
+                            <option value="Pacific/Auckland">UTC+12:00 (Nueva Zelanda)</option>
+                            <option value="Pacific/Fiji">UTC+12:00 (Fiji)</option>
+                            <option value="Pacific/Tongatapu">UTC+13:00 (Tonga)</option>
+                            <option value="Pacific/Kiritimati">UTC+14:00 (Kiribati)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary mt-lg" onclick="saveCompanySettings()">
+                <i data-lucide="save"></i>
+                Save Company Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Agent Personalization -->
+    <div class="card mb-lg">
+        <div class="card-header">
+            <h3 class="card-title">Agent Personalization</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--spacing-lg);">
+                <div class="form-group">
+                    <label class="form-label">Agent Name</label>
+                    <input type="text" class="form-input" id="agentName" placeholder="e.g., Alex">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select class="form-select" id="agentGender">
+                        <option value="neutral">Neutral</option>
+                        <option value="female">Female</option>
+                        <option value="male">Male</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Language</label>
+                    <select class="form-select" id="language">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="pt">Portuguese</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Personality Prompt</label>
+                <textarea class="form-textarea" id="personalityPrompt"
+                    placeholder="Describe your agent's personality, speaking style, and unique traits..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Custom Instructions</label>
+                <textarea class="form-textarea" id="customInstructions"
+                    placeholder="Add any special instructions for your agent..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="saveAgentSettings()">
+                <i data-lucide="save"></i>
+                Save Agent Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- LLM Configuration -->
+    <div class="card mb-lg">
+        <div class="card-header">
+            <h3 class="card-title">LLM Configuration</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                <div class="form-group">
+                    <label class="form-label">LLM Provider</label>
+                    <select class="form-select" id="llmProvider" onchange="updateModelOptions()">
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="google">Google AI</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <select class="form-select" id="llmModel">
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </select>
+                </div>
+            </div>
+
+            <h4 class="mt-lg mb-md">API Keys</h4>
+            <div class="form-group">
+                <label class="form-label">OpenAI API Key</label>
+                <div class="input-group">
+                    <input type="password" class="form-input" id="openaiKey" placeholder="sk-...">
+                    <button class="btn btn-icon" onclick="togglePassword('openaiKey')">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Anthropic API Key</label>
+                <div class="input-group">
+                    <input type="password" class="form-input" id="anthropicKey" placeholder="sk-ant-...">
+                    <button class="btn btn-icon" onclick="togglePassword('anthropicKey')">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Google AI API Key</label>
+                <div class="input-group">
+                    <input type="password" class="form-input" id="googleKey" placeholder="AIza...">
+                    <button class="btn btn-icon" onclick="togglePassword('googleKey')">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botón específico para guardar API Keys de IA -->
+            <button class="btn btn-primary mt-md" onclick="saveLLMKeysOnly()">
+                <i data-lucide="save"></i>
+                Guardar Configuración de IA
+            </button>
+
+            <h4 class="mt-lg mb-md">Voice Settings</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                <div class="form-group">
+                    <label class="form-label">Voice Provider</label>
+                    <select class="form-select" id="voiceProvider">
+                        <option value="elevenlabs">ElevenLabs</option>
+                        <option value="openai">OpenAI TTS</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ElevenLabs API Key</label>
+                    <div class="input-group">
+                        <input type="password" class="form-input" id="elevenlabsKey" placeholder="Your API key">
+                        <button class="btn btn-icon" onclick="togglePassword('elevenlabsKey')">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WhatsApp Configuration (Twilio) -->
+            <h4 class="mt-lg mb-md">WhatsApp (Twilio)</h4>
+            <div id="whatsappConfig">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                    <div class="form-group">
+                        <label class="form-label">Account SID</label>
+                        <input type="text" class="form-input" id="whatsappSid" placeholder="AC...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Auth Token</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="whatsappToken" placeholder="Your auth token">
+                            <button class="btn btn-icon" onclick="togglePassword('whatsappToken')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-md">
+                    <label class="form-label">WhatsApp Number</label>
+                    <input type="text" class="form-input" id="whatsappNumber" placeholder="e.g. +14155238886">
+                </div>
+            </div>
+
+            <!-- Voice Configuration -->
+            <h4 class="mt-lg mb-md">Voice Configuration</h4>
+            <div class="form-group mb-md">
+                <label class="form-label">Voice Provider</label>
+                <select class="form-select" id="telephonyProvider" onchange="toggleTelephonyConfig()">
+                    <option value="twilio">Twilio (Voice)</option>
+                    <option value="livekit">LiveKit (VoIP)</option>
+                </select>
+            </div>
+
+            <!-- Twilio Voice Config -->
+            <div id="twilioConfig">
+                <h5 class="mb-sm">Twilio Voice Settings</h5>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                    <div class="form-group">
+                        <label class="form-label">Account SID</label>
+                        <input type="text" class="form-input" id="voiceSid" placeholder="AC...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Auth Token</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="voiceToken" placeholder="Your auth token">
+                            <button class="btn btn-icon" onclick="togglePassword('voiceToken')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-md">
+                    <label class="form-label">Voice Phone Number</label>
+                    <input type="text" class="form-input" id="voiceNumber" placeholder="e.g. +15017122661">
+                </div>
+            </div>
+
+            <!-- LiveKit Config -->
+            <div id="livekitConfig" style="display: none;">
+                <h5 class="mb-sm">LiveKit Settings</h5>
+                <div class="form-group">
+                    <label class="form-label">LiveKit URL (WSS)</label>
+                    <input type="text" class="form-input" id="livekitUrl"
+                        placeholder="wss://your-project.livekit.cloud">
+                </div>
+                <div class="form-group mt-md">
+                    <label class="form-label">Outbound Caller ID</label>
+                    <input type="text" class="form-input" id="livekitCallerId"
+                        placeholder="+1234567890 (Your purchased number)">
+                </div>
+                <div
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); margin-top: var(--spacing-md);">
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="livekitKey" placeholder="API Key">
+                            <button class="btn btn-icon" onclick="togglePassword('livekitKey')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Secret</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="livekitSecret" placeholder="API Secret">
+                            <button class="btn btn-icon" onclick="togglePassword('livekitSecret')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-lg mb-md">Payments (PayPal)</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                <div class="form-group">
+                    <label class="form-label">Client ID</label>
+                    <input type="text" class="form-input" id="paypalId" placeholder="Your Client ID">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Client Secret</label>
+                    <div class="input-group">
+                        <input type="password" class="form-input" id="paypalSecret" placeholder="Your Client Secret">
+                        <button class="btn btn-icon" onclick="togglePassword('paypalSecret')">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Environment</label>
+                    <select class="form-select" id="paypalMode">
+                        <option value="sandbox">Sandbox</option>
+                        <option value="live">Live</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Email Configuration -->
+            <h4 class="mt-lg mb-md">Email Channel (SMTP/IMAP)</h4>
+            <div id="smtpFields">
+                <h5 class="mb-sm mt-md">Incoming Server (IMAP)</h5>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--spacing-sm);">
+                    <div class="form-group">
+                        <label class="form-label">Host</label>
+                        <input type="text" class="form-input" id="imapHost" placeholder="imap.hostinger.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Port</label>
+                        <input type="number" class="form-input" id="imapPort" placeholder="993">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Encryption</label>
+                        <select class="form-select" id="imapEnc">
+                            <option value="ssl">SSL</option>
+                            <option value="tls">TLS</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h5 class="mb-sm mt-md">Outgoing Server (SMTP)</h5>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--spacing-sm);">
+                    <div class="form-group">
+                        <label class="form-label">Host</label>
+                        <input type="text" class="form-input" id="smtpHost" placeholder="smtp.hostinger.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Port</label>
+                        <input type="number" class="form-input" id="smtpPort" placeholder="465">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Encryption</label>
+                        <select class="form-select" id="smtpEnc">
+                            <option value="ssl">SSL</option>
+                            <option value="tls">TLS</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h5 class="mb-sm mt-md">Authentication</h5>
+                <div class="form-group">
+                    <label class="form-label">Email User</label>
+                    <input type="email" class="form-input" id="emailUser" placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-input" id="emailPass" placeholder="Password">
+                        <button class="btn btn-icon" onclick="togglePassword('emailPass')">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group mt-sm">
+                    <label class="form-label">From Email Address</label>
+                    <input type="email" class="form-input" id="fromEmail" placeholder="noreply@yourcompany.com">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                <button class="btn btn-primary" onclick="saveLLMConfig()">
+                    <i data-lucide="save"></i>
+                    Save All Integrations
+                </button>
+            </div>
+            <!-- HubSpot CRM -->
+            <h4 class="mt-lg mb-md">HubSpot CRM</h4>
+            <div class="card mb-md"
+                style="background: rgba(255, 122, 89, 0.1); border: 1px solid rgba(255, 122, 89, 0.3);">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-md">
+                        <div class="flex items-center gap-sm">
+                            <i data-lucide="database" style="color: #FF7A59;"></i>
+                            <span class="font-medium">HubSpot CRM</span>
+                        </div>
+                        <span class="badge badge-warning" id="settingsHubspotStatus">Not Connected</span>
+                    </div>
+                    <div id="hubspotResourceInfo" class="text-sm text-muted mb-sm" style="display: none;"></div>
+                    <button class="btn btn-secondary btn-sm" onclick="connectHubSpot()">
+                        <i data-lucide="link"></i>
+                        <span id="hubspotConnectText">Connect HubSpot</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Google Services (OAuth) -->
+            <h4 class="mt-lg mb-md">Google Workspace (Calendar & Sheets)</h4>
+            <div class="card mb-md"
+                style="background: rgba(66, 133, 244, 0.1); border: 1px solid rgba(66, 133, 244, 0.3);">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-md">
+                        <div class="flex items-center gap-sm">
+                            <i data-lucide="calendar" style="color: #4285F4;"></i>
+                            <span class="font-medium">Google Calendar</span>
+                        </div>
+                        <span class="badge badge-warning" id="settingsCalendarStatus">Not Connected</span>
+                    </div>
+                    <div id="calendarResourceInfo" class="text-sm text-muted mb-sm" style="display: none;"></div>
+                    <button class="btn btn-secondary btn-sm" onclick="connectGoogleFromSettings('calendar')">
+                        <i data-lucide="link"></i>
+                        <span id="calendarConnectText">Connect Calendar</span>
+                    </button>
+                </div>
+            </div>
+            <div class="card mb-md"
+                style="background: rgba(15, 157, 88, 0.1); border: 1px solid rgba(15, 157, 88, 0.3);">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-md">
+                        <div class="flex items-center gap-sm">
+                            <i data-lucide="table" style="color: #0F9D58;"></i>
+                            <span class="font-medium">Google Sheets</span>
+                        </div>
+                        <span class="badge badge-warning" id="settingsSheetsStatus">Not Connected</span>
+                    </div>
+                    <div id="sheetsResourceInfo" class="text-sm text-muted mb-sm" style="display: none;"></div>
+                    <button class="btn btn-secondary btn-sm" onclick="connectGoogleFromSettings('sheets')">
+                        <i data-lucide="link"></i>
+                        <span id="sheetsConnectText">Connect Sheets</span>
+                    </button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                <button class="btn btn-primary" onclick="saveLLMConfig()">
+                    <i data-lucide="save"></i>
+                    Save All Integrations
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const modelOptions = {
+        openai: [
+            { id: 'gpt-4', name: 'GPT-4' },
+            { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
+            { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
+            { id: 'gpt-5-nano', name: 'GPT-5 Nano' },
+            { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' }
+        ],
+        anthropic: [
+            { id: 'claude-3-opus', name: 'Claude 3 Opus' },
+            { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet' },
+            { id: 'claude-3-haiku', name: 'Claude 3 Haiku' }
+        ],
+        google: [
+            { id: 'gemini-pro', name: 'Gemini Pro' },
+            { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' }
+        ]
+    };
+
+    function updateModelOptions() {
+        const provider = document.getElementById('llmProvider').value;
+        const modelSelect = document.getElementById('llmModel');
+        const models = modelOptions[provider] || [];
+
+        modelSelect.innerHTML = models.map(m =>
+            `<option value="${m.id}">${m.name}</option>`
+        ).join('');
+    }
+
+    function toggleTelephonyConfig() {
+        const provider = document.getElementById('telephonyProvider').value;
+        const twilioConfig = document.getElementById('twilioConfig');
+        const livekitConfig = document.getElementById('livekitConfig');
+
+        if (provider === 'livekit') {
+            twilioConfig.style.display = 'none';
+            livekitConfig.style.display = 'block';
+        } else {
+            twilioConfig.style.display = 'block';
+            livekitConfig.style.display = 'none';
+        }
+    }
+
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = input.nextElementSibling.querySelector('i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            input.type = 'password';
+            icon.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+    }
+
+    async function loadSettings() {
+        try {
+            // Load company
+            const companyData = await API.get('/companies/');
+            if (companyData.company) {
+                const c = companyData.company;
+                document.getElementById('companyName').value = c.name || '';
+                document.getElementById('industry').value = c.industry || '';
+                document.getElementById('companyEmail').value = c.email || '';
+                document.getElementById('companyPhone').value = c.phone || '';
+                document.getElementById('companyWebsite').value = c.website || '';
+                document.getElementById('companyCountry').value = c.country || '';
+                document.getElementById('companyCity').value = c.city || '';
+                document.getElementById('timezone').value = c.timezone || 'UTC';
+                document.getElementById('agentName').value = c.agent_name || '';
+                document.getElementById('agentGender').value = c.agent_gender || 'neutral';
+                document.getElementById('language').value = c.language || 'en';
+                document.getElementById('personalityPrompt').value = c.personality_prompt || '';
+                document.getElementById('customInstructions').value = c.custom_instructions || '';
+            }
+
+            // Load LLM config
+            const llmRes = await API.get('/companies/llm-config');
+            const llmData = llmRes;
+
+            document.getElementById('llmProvider').value = llmData.llm_provider || 'openai';
+            updateModelOptions();
+            document.getElementById('llmModel').value = llmData.llm_model || 'gpt-4';
+            document.getElementById('voiceProvider').value = llmData.voice_provider || 'elevenlabs';
+
+            // Populate keys if they exist
+            if (llmData.api_keys) {
+                const k = llmData.api_keys;
+
+                // LLM Keys
+                if (k.openai) document.getElementById('openaiKey').value = k.openai;
+                if (k.anthropic) document.getElementById('anthropicKey').value = k.anthropic;
+                if (k.google) document.getElementById('googleKey').value = k.google;
+                if (k.elevenlabs) document.getElementById('elevenlabsKey').value = k.elevenlabs;
+
+                if (k.telephony_provider) {
+                    document.getElementById('telephonyProvider').value = k.telephony_provider;
+                }
+                toggleTelephonyConfig(); // Set visibility based on dropdown
+
+                // LiveKit
+                if (k.livekit_url) document.getElementById('livekitUrl').value = k.livekit_url;
+                if (k.livekit_api_key) document.getElementById('livekitKey').value = k.livekit_api_key;
+                if (k.livekit_api_secret) document.getElementById('livekitSecret').value = k.livekit_api_secret;
+                if (k.livekit_caller_id) document.getElementById('livekitCallerId').value = k.livekit_caller_id;
+
+                // PayPal
+                if (k.paypal_id) document.getElementById('paypalId').value = k.paypal_id;
+                if (k.paypal_secret) document.getElementById('paypalSecret').value = k.paypal_secret;
+                if (k.paypal_mode) document.getElementById('paypalMode').value = k.paypal_mode;
+
+                // Google OAuth Status
+                if (k.google_oauth_credentials) {
+                    if (k.google_calendar_id) {
+                        document.getElementById('settingsCalendarStatus').textContent = 'Connected';
+                        document.getElementById('settingsCalendarStatus').className = 'badge badge-success';
+                        document.getElementById('calendarResourceInfo').style.display = 'block';
+                        document.getElementById('calendarResourceInfo').textContent = 'Calendar ID: ' + k.google_calendar_id.substring(0, 30) + '...';
+                        document.getElementById('calendarConnectText').textContent = 'Reconnect';
+                    }
+                    if (k.google_sheet_id) {
+                        document.getElementById('settingsSheetsStatus').textContent = 'Connected';
+                        document.getElementById('settingsSheetsStatus').className = 'badge badge-success';
+                        document.getElementById('sheetsResourceInfo').style.display = 'block';
+                        document.getElementById('sheetsResourceInfo').textContent = 'Sheet ID: ' + k.google_sheet_id.substring(0, 30) + '...';
+                        document.getElementById('sheetsConnectText').textContent = 'Reconnect';
+                    }
+                }
+
+                // HubSpot Status
+                if (k.hubspot_access_token) {
+                    document.getElementById('settingsHubspotStatus').textContent = 'Connected';
+                    document.getElementById('settingsHubspotStatus').className = 'badge badge-success';
+                    document.getElementById('hubspotResourceInfo').style.display = 'block';
+                    document.getElementById('hubspotResourceInfo').textContent = 'Portal ID: ' + (k.hubspot_portal_id || 'Connected');
+                    document.getElementById('hubspotConnectText').textContent = 'Reconnect';
+                }
+            }
+
+            // Load Email Channel Config (SMTP/IMAP)
+            try {
+                const emailChanRes = await API.get('/channels/email');
+                if (emailChanRes && emailChanRes.channel && emailChanRes.channel.credentials) {
+                    const ec = emailChanRes.channel.credentials;
+                    if (ec.imap_host) document.getElementById('imapHost').value = ec.imap_host;
+                    if (ec.imap_port) document.getElementById('imapPort').value = ec.imap_port;
+                    if (ec.imap_encryption) document.getElementById('imapEnc').value = ec.imap_encryption;
+
+                    if (ec.smtp_host) document.getElementById('smtpHost').value = ec.smtp_host;
+                    if (ec.smtp_port) document.getElementById('smtpPort').value = ec.smtp_port;
+                    if (ec.smtp_encryption) document.getElementById('smtpEnc').value = ec.smtp_encryption;
+
+                    if (ec.email_user) document.getElementById('emailUser').value = ec.email_user;
+                    if (ec.email_pass) document.getElementById('emailPass').value = ec.email_pass; // Usually masked
+                    if (ec.from_email) document.getElementById('fromEmail').value = ec.from_email;
+                }
+            } catch (emailErr) {
+                console.log('Email channel not configured or error fetching:', emailErr);
+            }
+
+            // Load WhatsApp (Twilio)
+            try {
+                const waRes = await API.get('/channels/whatsapp');
+                if (waRes && waRes.channel && waRes.channel.credentials) {
+                    const wc = waRes.channel.credentials;
+                    if (wc.account_sid) document.getElementById('whatsappSid').value = wc.account_sid;
+                    if (wc.auth_token) document.getElementById('whatsappToken').value = wc.auth_token; // Masked
+                    if (wc.phone_number) document.getElementById('whatsappNumber').value = wc.phone_number;
+                }
+            } catch (ignore) { }
+
+            // Load Voice (Twilio or LiveKit)
+            try {
+                const voiceRes = await API.get('/channels/voice');
+                if (voiceRes && voiceRes.channel && voiceRes.channel.credentials) {
+                    const vc = voiceRes.channel.credentials;
+                    // If provider matches logic in channel wrapper
+                    // But here we rely on credentials
+                    if (vc.account_sid) document.getElementById('voiceSid').value = vc.account_sid;
+                    if (vc.auth_token) document.getElementById('voiceToken').value = vc.auth_token;
+                    if (vc.phone_number) document.getElementById('voiceNumber').value = vc.phone_number;
+                }
+            } catch (ignore) { }
+
+        } catch (e) {
+            console.log('Error loading settings:', e);
+        }
+    }
+
+    async function saveCompanySettings() {
+        try {
+            await API.put('/companies/', {
+                name: document.getElementById('companyName').value,
+                industry: document.getElementById('industry').value,
+                email: document.getElementById('companyEmail').value,
+                phone: document.getElementById('companyPhone').value,
+                website: document.getElementById('companyWebsite').value,
+                country: document.getElementById('companyCountry').value,
+                city: document.getElementById('companyCity').value,
+                timezone: document.getElementById('timezone').value
+            });
+            showToast('Company settings saved!', 'success');
+        } catch (e) {
+            showToast('Error saving settings', 'error');
+        }
+    }
+
+    async function saveAgentSettings() {
+        try {
+            await API.put('/companies/agent-settings', {
+                agent_name: document.getElementById('agentName').value,
+                agent_gender: document.getElementById('agentGender').value,
+                personality_prompt: document.getElementById('personalityPrompt').value,
+                custom_instructions: document.getElementById('customInstructions').value
+            });
+            showToast('Agent settings saved!', 'success');
+        } catch (e) {
+            showToast('Error saving settings', 'error');
+        }
+    }
+
+    // Función simplificada SOLO para guardar API Keys de LLM/IA
+    async function saveLLMKeysOnly() {
+        try {
+            const apiKeys = {};
+
+            // Obtener valores solo si no son el placeholder
+            const getKey = (id) => {
+                const val = document.getElementById(id).value;
+                return (val && val !== "********") ? val : null;
+            };
+
+            const openaiKey = getKey('openaiKey');
+            const anthropicKey = getKey('anthropicKey');
+            const googleKey = getKey('googleKey');
+            const elevenlabsKey = getKey('elevenlabsKey');
+
+            if (openaiKey) apiKeys.openai = openaiKey;
+            if (anthropicKey) apiKeys.anthropic = anthropicKey;
+            if (googleKey) apiKeys.google = googleKey;
+            if (elevenlabsKey) apiKeys.elevenlabs = elevenlabsKey;
+
+            await API.put('/companies/llm-config', {
+                llm_provider: document.getElementById('llmProvider').value,
+                llm_model: document.getElementById('llmModel').value,
+                voice_provider: document.getElementById('voiceProvider').value,
+                api_keys: apiKeys
+            });
+
+            showToast('¡Configuración de IA guardada correctamente!', 'success');
+        } catch (e) {
+            console.error('Error guardando LLM config:', e);
+            showToast('Error guardando configuración de IA', 'error');
+        }
+    }
+
+    async function saveLLMConfig() {
+        try {
+            const apiKeys = {};
+
+            // Helper to get value only if changed
+            const getKey = (id) => {
+                const val = document.getElementById(id).value;
+                return (val && val !== "********") ? val : null;
+            };
+
+            const openaiKey = getKey('openaiKey');
+            const anthropicKey = getKey('anthropicKey');
+            const googleKey = getKey('googleKey');
+            const elevenlabsKey = getKey('elevenlabsKey');
+
+            if (openaiKey) apiKeys.openai = openaiKey;
+            if (anthropicKey) apiKeys.anthropic = anthropicKey;
+            if (googleKey) apiKeys.google = googleKey;
+            if (elevenlabsKey) apiKeys.elevenlabs = elevenlabsKey;
+
+            // Telephony Provider
+            apiKeys.telephony_provider = document.getElementById('telephonyProvider').value;
+
+            // LiveKit keys
+            const livekitUrl = document.getElementById('livekitUrl').value;
+            const livekitCallerId = document.getElementById('livekitCallerId').value;
+            const livekitKey = document.getElementById('livekitKey').value;
+            const livekitSecret = getKey('livekitSecret');
+
+            if (livekitUrl) apiKeys.livekit_url = livekitUrl;
+            if (livekitCallerId) apiKeys.livekit_caller_id = livekitCallerId;
+            if (livekitKey) apiKeys.livekit_api_key = livekitKey;
+            if (livekitSecret) apiKeys.livekit_api_secret = livekitSecret;
+
+            // PayPal keys
+            const paypalId = document.getElementById('paypalId').value;
+            const paypalSecret = getKey('paypalSecret');
+            const paypalMode = document.getElementById('paypalMode').value;
+
+            if (paypalId) apiKeys.paypal_id = paypalId;
+            if (paypalSecret) apiKeys.paypal_secret = paypalSecret;
+            if (paypalMode) apiKeys.paypal_mode = paypalMode;
+
+            // Google Service Account
+            const googleServiceAccount = document.getElementById('googleServiceAccount').value;
+            if (googleServiceAccount) {
+                try {
+                    JSON.parse(googleServiceAccount); // Validate JSON
+                    apiKeys.google_service_account = googleServiceAccount;
+                } catch (e) {
+                    showToast('Invalid Google Service Account JSON', 'error');
+                    return;
+                }
+            }
+
+            await API.put('/companies/llm-config', {
+                llm_provider: document.getElementById('llmProvider').value,
+                llm_model: document.getElementById('llmModel').value,
+                voice_provider: document.getElementById('voiceProvider').value,
+                api_keys: apiKeys
+            });
+
+            // Save WhatsApp Config
+            const waToken = getKey('whatsappToken');
+            const waCreds = {
+                account_sid: document.getElementById('whatsappSid').value,
+                phone_number: document.getElementById('whatsappNumber').value
+            };
+            if (waToken) waCreds.auth_token = waToken;
+
+            await API.post('/channels/connect', {
+                type: 'whatsapp',
+                credentials: waCreds
+            });
+
+            // Save Voice Config
+            const vProvider = document.getElementById('telephonyProvider').value;
+            if (vProvider === 'twilio') {
+                const vToken = getKey('voiceToken');
+                const vCreds = {
+                    account_sid: document.getElementById('voiceSid').value,
+                    phone_number: document.getElementById('voiceNumber').value
+                };
+                if (vToken) vCreds.auth_token = vToken;
+
+                await API.post('/channels/connect', {
+                    type: 'voice',
+                    provider: 'twilio',
+                    credentials: vCreds
+                });
+            } else {
+                // LiveKit is handled by api_keys above, or we can explicit connect here too
+                // But LiveKitService reads from company api_keys OR channel.
+                // To reference existing logic: connect_voice handles livekit too if type=voice and provider=livekit
+                // Let's do it for consistency
+                const lkSecret = getKey('livekitSecret');
+                const lkCreds = {
+                    livekit_url: document.getElementById('livekitUrl').value,
+                    livekit_api_key: document.getElementById('livekitKey').value,
+                    livekit_caller_id: document.getElementById('livekitCallerId').value
+                };
+                if (lkSecret) lkCreds.livekit_api_secret = lkSecret;
+
+                await API.post('/channels/connect', {
+                    type: 'voice',
+                    provider: 'livekit',
+                    credentials: lkCreds
+                });
+            }
+
+            // Save Email Channel Config
+            // We use the Connect endpoint logic
+            const emailPass = getKey('emailPass');
+            const emailCreds = {
+                from_email: document.getElementById('fromEmail').value,
+                imap_host: document.getElementById('imapHost').value,
+                imap_port: document.getElementById('imapPort').value,
+                imap_encryption: document.getElementById('imapEnc').value,
+                smtp_host: document.getElementById('smtpHost').value,
+                smtp_port: document.getElementById('smtpPort').value,
+                smtp_encryption: document.getElementById('smtpEnc').value,
+                email_user: document.getElementById('emailUser').value
+            };
+            if (emailPass) emailCreds.email_pass = emailPass;
+
+            await API.post('/channels/connect', {
+                type: 'email',
+                credentials: emailCreds
+            });
+
+            showToast('All configurations saved!', 'success');
+        } catch (e) {
+            showToast('Error saving configuration', 'error');
+        }
+    }
+
+    async function connectHubSpot() {
+        try {
+            const currentPath = window.location.pathname;
+            const res = await API.get(`/auth/hubspot/authorize?next=${encodeURIComponent(currentPath)}`);
+            if (res.auth_url) {
+                window.location.href = res.auth_url;
+            } else {
+                showToast('Error getting authorization URL: ' + (res.error || 'Unknown'), 'error');
+            }
+        } catch (e) {
+            showToast('Failed to initiate connection', 'error');
+        }
+    }
+
+    async function connectGoogleFromSettings(type) {
+        try {
+            // Check if already connected
+            const statusRes = await API.get('/auth/google/status');
+
+            if (!statusRes.connected) {
+                // Not connected, redirect to Google login
+                localStorage.setItem('pending_google_type', type);
+                const currentPath = window.location.pathname;
+                const loginRes = await API.get(`/auth/google/login?next=${encodeURIComponent(currentPath)}`);
+                if (loginRes.url) {
+                    window.location.href = loginRes.url;
+                } else {
+                    showToast('Error getting Google Auth URL', 'error');
+                }
+                return;
+            }
+
+            // Connected - show resource selection
+            if (type === 'calendar') {
+                const calendarsRes = await API.get('/auth/google/calendars');
+                if (calendarsRes.calendars && calendarsRes.calendars.length > 0) {
+                    const body = `
+                        <div class="form-group">
+                            <label class="form-label">Select Calendar</label>
+                            <select class="form-select" id="googleCalendarSelect">
+                                ${calendarsRes.calendars.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                    const footer = `
+                        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveGoogleCalendarFromSettings()">Save</button>
+                    `;
+                    openModal('Select Google Calendar', body, footer);
+                } else {
+                    showToast('No calendars found', 'warning');
+                }
+            } else if (type === 'sheets') {
+                const sheetsRes = await API.get('/auth/google/sheets');
+                if (sheetsRes.spreadsheets && sheetsRes.spreadsheets.length > 0) {
+                    const body = `
+                        <div class="form-group">
+                            <label class="form-label">Select Spreadsheet</label>
+                            <select class="form-select" id="googleSheetSelect">
+                                ${sheetsRes.spreadsheets.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                    const footer = `
+                        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveGoogleSheetFromSettings()">Save</button>
+                    `;
+                    openModal('Select Google Sheet', body, footer);
+                } else {
+                    showToast('No spreadsheets found', 'warning');
+                }
+            }
+        } catch (e) {
+            console.error(e);
+            showToast('Error connecting to Google', 'error');
+        }
+    }
+
+    async function saveGoogleCalendarFromSettings() {
+        const calendarId = document.getElementById('googleCalendarSelect').value;
+        try {
+            await API.post('/auth/google/config', { calendar_id: calendarId });
+            showToast('Calendar saved successfully!', 'success');
+            closeModal();
+            loadSettings();
+        } catch (e) {
+            showToast('Error saving calendar', 'error');
+        }
+    }
+
+    async function saveGoogleSheetFromSettings() {
+        const sheetId = document.getElementById('googleSheetSelect').value;
+        try {
+            await API.post('/auth/google/config', { sheet_id: sheetId });
+            showToast('Spreadsheet saved successfully!', 'success');
+            closeModal();
+            loadSettings();
+        } catch (e) {
+            showToast('Error saving spreadsheet', 'error');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSettings();
+        lucide.createIcons();
+
+        // Check for HubSpot OAuth success
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('hubspot') === 'connected') {
+            showToast('Successfully connected to HubSpot!', 'success');
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    });
+</script>
+{% endblock %}

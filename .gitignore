@@ -1,0 +1,35 @@
+__pycache__/
+*.pyc
+*.pyo
+*.so
+*.dylib
+*.dll
+venv/
+.next/
+node_modules/
+.DS_Store
+.env
+.env.local
+.env.production
+.env.save*
+*.backup*
+legacy_root_backup/
+*.log
+dump.rdb
+*.json
+!translation.json
+!plugin.json
+!metadata.json
+!composer.json
+!package.json
+!frontend/lotties/*.json
+service-account.json
+
+# Ignorar subidas de archivos y notas de voz de clientes (backend/uploads)
+backend/uploads/**/*
+!backend/uploads/**/.gitkeep
+
+# Ignorar habilidades dinámicas de empresas (uploads/skills)
+uploads/skills/**/*
+!uploads/skills/**/.gitkeep
+templates/outstatic/

@@ -1,0 +1,1123 @@
+{% extends "base.html" %}
+
+{% block title %}Channels - PymAI{% endblock %}
+{% block header_title %}Communication Channels{% endblock %}
+
+{% block content %}
+<div class="channels-page">
+    <div class="mb-lg">
+        <h2>Connect Your Channels</h2>
+        <p class="text-muted">Set up communication channels for your AI agents to interact with customers.</p>
+    </div>
+
+    <!-- Channel Grid -->
+    <div class="stats-grid">
+        <!-- WhatsApp -->
+        <div class="card" id="whatsappCard">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon green">
+                        <i data-lucide="message-circle"></i>
+                    </div>
+                    <div>
+                        <h3>WhatsApp</h3>
+                        <span class="badge badge-warning" id="whatsappStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Send and receive WhatsApp messages through your AI agent.</p>
+                <button class="btn btn-secondary w-full" onclick="connectChannel('whatsapp')">
+                    <i data-lucide="plug"></i>
+                    Connect WhatsApp
+                </button>
+            </div>
+        </div>
+
+        <!-- Voice Calls -->
+        <div class="card" id="voiceCard">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon purple">
+                        <i data-lucide="phone"></i>
+                    </div>
+                    <div>
+                        <h3>Voice Calls</h3>
+                        <span class="badge badge-warning" id="voiceStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Handle inbound and outbound voice calls with AI.</p>
+                <button class="btn btn-secondary w-full" onclick="connectChannel('voice')">
+                    <i data-lucide="plug"></i>
+                    Connect Voice
+                </button>
+            </div>
+        </div>
+
+        <!-- SMS -->
+        <div class="card" id="smsCard">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon blue">
+                        <i data-lucide="message-square"></i>
+                    </div>
+                    <div>
+                        <h3>SMS</h3>
+                        <span class="badge badge-warning" id="smsStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Send and receive SMS text messages.</p>
+                <button class="btn btn-secondary w-full" onclick="connectChannel('sms')">
+                    <i data-lucide="plug"></i>
+                    Connect SMS
+                </button>
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="card" id="emailCard">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon orange">
+                        <i data-lucide="mail"></i>
+                    </div>
+                    <div>
+                        <h3>Email</h3>
+                        <span class="badge badge-warning" id="emailStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Send emails on behalf of your business.</p>
+                <button class="btn btn-secondary w-full" onclick="connectChannel('email')">
+                    <i data-lucide="plug"></i>
+                    Connect Email
+                </button>
+            </div>
+        </div>
+
+        <!-- Telegram -->
+        <div class="card" id="telegramCard">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon blue">
+                        <i data-lucide="send"></i>
+                    </div>
+                    <div>
+                        <h3>Telegram</h3>
+                        <span class="badge badge-warning" id="telegramStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Connect a Telegram Bot for automated automated replies.</p>
+                <button class="btn btn-secondary w-full" onclick="connectChannel('telegram')">
+                    <i data-lucide="plug"></i>
+                    Connect Telegram
+                </button>
+            </div>
+        </div>
+
+        <!-- Web Chat -->
+        <div class="card" id="webchatCard">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon green">
+                        <i data-lucide="message-circle"></i>
+                    </div>
+                    <div>
+                        <h3>Web Chat</h3>
+                        <span class="badge badge-warning" id="webchatStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Embed a chat widget on your website.</p>
+                <div class="flex gap-sm">
+                    <button class="btn btn-secondary flex-1" onclick="connectChannel('webchat')">
+                        Connect
+                    </button>
+                    <button class="btn btn-ghost" onclick="showWebChatCode()" style="display: none;"
+                        id="webchatCodeBtn">
+                        <i data-lucide="code"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integrations Section -->
+    <h2 class="mt-lg mb-lg">Integrations</h2>
+
+    <div class="stats-grid">
+
+        <!-- HubSpot CRM -->
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon orange">
+                        <!-- HubSpot Icon or similar -->
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div>
+                        <h3>HubSpot CRM</h3>
+                        <span class="badge badge-warning" id="hubspotStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Sync contacts, deals, and notes automatically.</p>
+                <button class="btn btn-secondary w-full" onclick="connectHubSpot()">
+                    <i data-lucide="plug"></i>
+                    Connect HubSpot
+                </button>
+            </div>
+        </div>
+
+        <!-- Google Calendar -->
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon blue">
+                        <i data-lucide="calendar"></i>
+                    </div>
+                    <div>
+                        <h3>Google Calendar</h3>
+                        <span class="badge badge-warning" id="calendarStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Schedule meetings and check availability.</p>
+                <div class="flex gap-sm">
+                    <button class="btn btn-secondary flex-1" onclick="connectGoogleIntegration('calendar')">
+                        <i data-lucide="plug"></i>
+                        Connect
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Google Sheets -->
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon green">
+                        <i data-lucide="table"></i>
+                    </div>
+                    <div>
+                        <h3>Google Sheets</h3>
+                        <span class="badge badge-warning" id="sheetsStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Access inventory, prices, and data.</p>
+                <button class="btn btn-secondary w-full" onclick="connectGoogleIntegration('sheets')">
+                    <i data-lucide="plug"></i>
+                    Connect Sheets
+                </button>
+            </div>
+        </div>
+
+        <!-- PayPal -->
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center gap-md mb-lg">
+                    <div class="stat-icon blue">
+                        <i data-lucide="credit-card"></i>
+                    </div>
+                    <div>
+                        <h3>PayPal</h3>
+                        <span class="badge badge-warning" id="paypalStatusBadge">Not Connected</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-lg">Process payments conversationally.</p>
+                <button class="btn btn-secondary w-full" onclick="connectIntegration('paypal')">
+                    <i data-lucide="plug"></i>
+                    Connect PayPal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let channelsData = {};
+    let integrationKeys = {}; // Global store for integration keys
+
+    // Toggle password visibility
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const btn = input.parentElement.querySelector('button i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (btn) btn.setAttribute('data-lucide', 'eye-off');
+        } else {
+            input.type = 'password';
+            if (btn) btn.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+    }
+
+    // Helper to get value only if changed (not mask)
+    function getSecretValue(id) {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const val = el.value;
+        return (val && val !== '********') ? val : null;
+    }
+
+    async function loadChannels() {
+        try {
+            // 1. Load Channels (WhatsApp, Voice, SMS, Email)
+            const chanRes = await API.get('/channels/');
+            if (chanRes.channels) {
+                chanRes.channels.forEach(channel => {
+                    channelsData[channel.type] = channel;
+                    const badge = document.getElementById(`${channel.type}StatusBadge`);
+                    if (badge && channel.status === 'connected') {
+                        badge.textContent = 'Connected';
+                        badge.className = 'badge badge-success';
+
+                        if (channel.type === 'webchat') {
+                            const btn = document.getElementById('webchatCodeBtn');
+                            if (btn) btn.style.display = 'block';
+                        }
+                    }
+                });
+            }
+
+            // 2. Load Integrations Status (from LLM Config/API Keys)
+            const configRes = await API.get('/companies/llm-config');
+            const keys = configRes.api_keys || {};
+            integrationKeys = keys; // Store globally
+
+            // Helper for badge update
+            const setConnected = (id) => {
+                const badge = document.getElementById(id);
+                if (badge) {
+                    badge.textContent = 'Connected';
+                    badge.className = 'badge badge-success';
+                }
+            };
+
+            // Check Google
+            if (keys.google_oauth_credentials) {
+                if (keys.google_calendar_id) setConnected('calendarStatusBadge');
+                if (keys.google_sheet_id) setConnected('sheetsStatusBadge');
+            } else if (keys.google_service_account_configured) {
+                setConnected('calendarStatusBadge');
+                setConnected('sheetsStatusBadge');
+            }
+
+            // Check PayPal
+            if (keys.paypal_id) {
+                setConnected('paypalStatusBadge');
+            }
+
+            // Check HubSpot
+            if (keys.hubspot_access_token) {
+                setConnected('hubspotStatusBadge');
+            }
+
+        } catch (e) {
+            console.log('Error loading channels/integrations:', e);
+        }
+    }
+
+    // HubSpot Connect
+    async function connectHubSpot() {
+        try {
+            const currentPath = window.location.pathname;
+            const res = await API.get(`/auth/hubspot/authorize?next=${encodeURIComponent(currentPath)}`);
+            if (res.auth_url) {
+                window.location.href = res.auth_url;
+            } else {
+                showToast('Error getting authorization URL', 'error');
+            }
+        } catch (e) {
+            showToast('Failed to connect to HubSpot', 'error');
+        }
+    }
+
+    // Google Integration Connect
+    async function connectGoogleIntegration(type, fromRedirect = false) {
+        try {
+            // 1. Check Auth Status
+            const statusRes = await API.get('/auth/google/status');
+
+            if (!statusRes.connected) {
+                if (fromRedirect) {
+                    console.error("Connection check failed after redirect. Aborting loop.");
+                    showToast('Connection verification failed. Please try again.', 'error');
+                    return;
+                }
+
+                // Not connected, redirect to login
+                localStorage.setItem('pending_google_type', type);
+                const currentPath = window.location.pathname;
+                const loginRes = await API.get(`/auth/google/login?next=${encodeURIComponent(currentPath)}`);
+                if (loginRes.url) {
+                    window.location.href = loginRes.url;
+                } else {
+                    showToast('Error getting Google Auth URL', 'error');
+                }
+                return;
+            }
+
+            // 2. Fetch Resources
+            let items = [];
+            let itemType = '';
+            let endpoint = '';
+
+            if (type === 'calendar') {
+                endpoint = '/auth/google/calendars';
+                itemType = 'calendar';
+            } else if (type === 'sheets') {
+                endpoint = '/auth/google/sheets';
+                itemType = 'sheet';
+            }
+
+            showToast('Loading resources...', 'info');
+            const res = await API.get(endpoint);
+
+            if (type === 'calendar') items = res.calendars;
+            else items = res.sheets;
+
+            if (!items || items.length === 0) {
+                showToast(`No ${type}s found`, 'warning');
+                return;
+            }
+
+            // 3. Show Modal
+            const optionsHtml = items.map(item => `<option value="${item.id}">${item.name}</option>`).join('');
+
+            const body = `
+                <p class="mb-md">Select the ${type} you want to use with your AI Agent:</p>
+                <div class="form-group">
+                    <label class="form-label">${type === 'calendar' ? 'Calendar' : 'Spreadsheet'}</label>
+                    <select class="form-select" id="selectedGoogleResource">
+                        ${optionsHtml}
+                    </select>
+                </div>
+            `;
+
+            const footer = `
+                <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGoogleConfig('${itemType}')">Save Selection</button>
+            `;
+
+            openModal(`Select ${type === 'calendar' ? 'Calendar' : 'Spreadsheet'}`, body, footer);
+
+        } catch (e) {
+            console.error(e);
+            showToast('Error connecting to Google', 'error');
+        }
+    }
+
+    async function saveGoogleConfig(itemType) {
+        const val = document.getElementById('selectedGoogleResource').value;
+        const payload = {};
+        if (itemType === 'calendar') payload.calendar_id = val;
+        if (itemType === 'sheet') payload.sheet_id = val;
+
+        try {
+            await API.post('/auth/google/config', payload);
+            closeModal();
+            showToast('Configuration saved!', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } catch (e) {
+            showToast('Error saving config', 'error');
+        }
+    }
+
+
+
+    function updateIntegrationBadge(type) {
+        const badge = document.getElementById(`${type}StatusBadge`);
+        if (badge) {
+            badge.textContent = 'Connected';
+            badge.className = 'badge badge-success';
+        }
+    }
+
+    function connectChannel(type) {
+        let fields = '';
+        // Check if we have existing data
+        const channel = channelsData[type];
+        const credentials = channel ? (channel.credentials || {}) : {};
+        const provider = credentials.provider || 'twilio';
+
+        if (type === 'whatsapp') {
+            fields = `
+                <div class="form-group">
+                    <label class="form-label">Provider</label>
+                    <select class="form-select" id="whatsappProvider" onchange="toggleWhatsAppFields()">
+                        <option value="twilio" ${provider === 'twilio' ? 'selected' : ''}>Twilio</option>
+                        <option value="meta" ${provider === 'meta' ? 'selected' : ''}>Meta (Official Cloud API)</option>
+                        <option value="baileys" ${provider === 'baileys' ? 'selected' : ''}>Baileys (Direct QR - No API needed)</option>
+                    </select>
+                </div>
+
+                <!-- Twilio Fields -->
+                <div id="twilioWhatsAppFields" style="display: ${provider === 'twilio' ? 'block' : 'none'};">
+                    <div class="form-group">
+                        <label class="form-label">Twilio Account SID</label>
+                        <input type="text" class="form-input" id="waTwilioSid" value="${credentials.account_sid || ''}" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Twilio Auth Token</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="waTwilioToken" value="${credentials.auth_token || ''}" placeholder="Your auth token">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('waTwilioToken')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-input" id="waTwilioPhone" value="${credentials.phone_number || ''}" placeholder="+1234567890">
+                    </div>
+                </div>
+
+                <!-- Meta Fields -->
+                <div id="metaWhatsAppFields" style="display: ${provider === 'meta' ? 'block' : 'none'};">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number ID</label>
+                        <input type="text" class="form-input" id="metaPhoneId" value="${credentials.phone_number_id || ''}" placeholder="100609345...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">WhatsApp Business Account ID</label>
+                        <input type="text" class="form-input" id="metaWabaId" value="${credentials.waba_id || ''}" placeholder="109458...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Access Token</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="metaToken" value="${credentials.access_token || ''}" placeholder="System User Token">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('metaToken')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label class="form-label">Verify Token (Webhook)</label>
+                        <input type="text" class="form-input" id="metaVerifyToken" value="${credentials.verify_token || ''}" placeholder="my_secure_verify_token">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number (Display)</label>
+                        <input type="text" class="form-input" id="metaPhoneDisplay" value="${credentials.phone_number || ''}" placeholder="+1234567890">
+                    </div>
+                </div>
+
+                <!-- Baileys Fields (QR Code) -->
+                <div id="baileysWhatsAppFields" style="display: ${provider === 'baileys' ? 'block' : 'none'};">
+                    <div class="alert alert-info mb-md">
+                        <strong>Direct Connection:</strong> No API keys required. Just scan the QR code with your WhatsApp.
+                    </div>
+                    <div id="baileysQrContainer" class="text-center" style="min-height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                        <p class="text-muted">Click "Connect" to generate QR code</p>
+                    </div>
+                    <div id="baileysStatusContainer" style="display: none;" class="text-center mt-md">
+                        <span class="badge badge-success"><i data-lucide="check-circle"></i> Connected!</span>
+                        <p class="text-sm text-muted mt-sm">WhatsApp linked successfully</p>
+                    </div>
+                </div>
+            `;
+        } else if (type === 'sms') {
+            fields = `
+                <div class="form-group">
+                    <label class="form-label">Twilio Account SID</label>
+                    <input type="text" class="form-input" id="accountSid" value="${credentials.account_sid || ''}" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Twilio Auth Token</label>
+                    <div class="input-group">
+                        <input type="password" class="form-input" id="authToken" value="${credentials.auth_token || ''}" placeholder="Your auth token">
+                        <button class="btn btn-icon" type="button" onclick="togglePassword('authToken')">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" class="form-input" id="phoneNumber" value="${credentials.phone_number || ''}" placeholder="+1234567890">
+                </div>
+            `;
+        } else if (type === 'voice') {
+            // Dropdown to select provider
+            fields = `
+                <div class="form-group">
+                    <label class="form-label">Provider</label>
+                    <select class="form-select" id="voiceProvider" onchange="toggleVoiceFields()">
+                        <option value="twilio" ${provider === 'twilio' ? 'selected' : ''}>Twilio</option>
+                        <option value="livekit" ${provider === 'livekit' ? 'selected' : ''}>LiveKit (VoIP)</option>
+                    </select>
+                </div>
+                
+                <!-- Twilio Fields -->
+                <div id="twilioFields" style="display: ${provider === 'twilio' ? 'block' : 'none'};">
+                    <div class="form-group">
+                        <label class="form-label">Twilio Account SID</label>
+                        <input type="text" class="form-input" id="accountSid" value="${credentials.account_sid || ''}" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Twilio Auth Token</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="authToken" value="${credentials.auth_token || ''}" placeholder="Your auth token">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('authToken')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-input" id="phoneNumber" value="${credentials.phone_number || ''}" placeholder="+1234567890">
+                    </div>
+                </div>
+                
+                <!-- LiveKit Fields -->
+                <div id="livekitFields" style="display: ${provider === 'livekit' ? 'block' : 'none'};">
+                    <div class="form-group">
+                        <label class="form-label">LiveKit URL (WSS)</label>
+                        <input type="text" class="form-input" id="livekitUrl" value="${credentials.livekit_url || ''}" placeholder="wss://your-project.livekit.cloud">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="livekitKey" value="${credentials.livekit_api_key || ''}" placeholder="API Key">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('livekitKey')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Secret</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="livekitSecret" value="${credentials.livekit_api_secret || ''}" placeholder="API Secret">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('livekitSecret')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Outbound Caller ID</label>
+                        <input type="text" class="form-input" id="livekitCallerId" value="${credentials.livekit_caller_id || ''}" placeholder="+1234567890">
+                    </div>
+                </div>
+            `;
+        } else if (type === 'email') {
+            fields = `
+                <input type="hidden" id="emailProvider" value="smtp">
+                
+                <!-- SMTP/IMAP Fields -->
+                <div id="smtpFields">
+                    <h5 class="mb-sm mt-md">Incoming Server (IMAP)</h5>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--spacing-sm);">
+                        <div class="form-group">
+                            <label class="form-label">Host</label>
+                            <input type="text" class="form-input" id="imapHost" value="${credentials.imap_host || ''}" placeholder="imap.hostinger.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Port</label>
+                            <input type="number" class="form-input" id="imapPort" value="${credentials.imap_port || '993'}" placeholder="993">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Encryption</label>
+                            <select class="form-select" id="imapEnc">
+                                <option value="ssl" ${credentials.imap_encryption === 'ssl' ? 'selected' : ''}>SSL</option>
+                                <option value="tls" ${credentials.imap_encryption === 'tls' ? 'selected' : ''}>TLS</option>
+                                <option value="none" ${credentials.imap_encryption === 'none' ? 'selected' : ''}>None</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-sm mt-md">Outgoing Server (SMTP)</h5>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--spacing-sm);">
+                        <div class="form-group">
+                            <label class="form-label">Host</label>
+                            <input type="text" class="form-input" id="smtpHost" value="${credentials.smtp_host || ''}" placeholder="smtp.hostinger.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Port</label>
+                            <input type="number" class="form-input" id="smtpPort" value="${credentials.smtp_port || '465'}" placeholder="465">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Encryption</label>
+                            <select class="form-select" id="smtpEnc">
+                                <option value="ssl" ${credentials.smtp_encryption === 'ssl' ? 'selected' : ''}>SSL</option>
+                                <option value="tls" ${credentials.smtp_encryption === 'tls' ? 'selected' : ''}>TLS</option>
+                                <option value="none" ${credentials.smtp_encryption === 'none' ? 'selected' : ''}>None</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-sm mt-md">Authentication</h5>
+                     <div class="form-group">
+                        <label class="form-label">Email User</label>
+                        <input type="email" class="form-input" id="emailUser" value="${credentials.email_user || ''}" placeholder="user@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="emailPass" value="${credentials.email_pass || ''}" placeholder="Password">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('emailPass')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-md">
+                    <label class="form-label">From Email Address</label>
+                    <input type="email" class="form-input" id="fromEmail" value="${credentials.from_email || ''}" placeholder="noreply@yourcompany.com">
+                </div>
+            `;
+        } else if (type === 'telegram') {
+            // Check for existing Telegram channel
+            const existingToken = credentials.telegram_token || '';
+            const botUsername = credentials.bot_username || '';
+            const isConnected = channelsData['telegram']?.status === 'connected';
+
+            fields = `
+                ${isConnected ? `<div class="alert alert-info mb-md"><strong>Connected:</strong> @${botUsername}</div>` : ''}
+                <div class="form-group">
+                    <label class="form-label">Bot Token</label>
+                    <div class="input-group">
+                        <input type="password" class="form-input" id="telegramToken" value="${existingToken}" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11">
+                        <button class="btn btn-icon" type="button" onclick="togglePassword('telegramToken')">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                    <small class="text-sm text-gray">Create a bot with <a href="https://t.me/BotFather" target="_blank">@BotFather</a>. ${isConnected ? 'Leave blank to keep existing token.' : ''}</small>
+                </div>
+            `;
+        } else if (type === 'webchat') {
+            fields = '<p class="mb-lg">Click Connect to generate your unique Chat Widget ID.</p>';
+        }
+
+        const body = `
+            <p class="mb-lg">Enter your credentials to connect ${type}.</p>
+            ${fields}
+        `;
+
+        const footer = `
+            <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitConnect('${type}')">Connect</button>
+        `;
+
+        openModal(`Connect ${type.charAt(0).toUpperCase() + type.slice(1)}`, body, footer);
+        // Re-init icons after modal content is added
+        setTimeout(() => lucide.createIcons(), 100);
+    }
+
+    function toggleVoiceFields() {
+        const provider = document.getElementById('voiceProvider').value;
+        if (provider === 'livekit') {
+            document.getElementById('twilioFields').style.display = 'none';
+            document.getElementById('livekitFields').style.display = 'block';
+        } else {
+            document.getElementById('twilioFields').style.display = 'block';
+            document.getElementById('livekitFields').style.display = 'none';
+        }
+    }
+
+    function toggleWhatsAppFields() {
+        const provider = document.getElementById('whatsappProvider').value;
+        const twilioFields = document.getElementById('twilioWhatsAppFields');
+        const metaFields = document.getElementById('metaWhatsAppFields');
+        const baileysFields = document.getElementById('baileysWhatsAppFields');
+
+        // Hide all
+        if (twilioFields) twilioFields.style.display = 'none';
+        if (metaFields) metaFields.style.display = 'none';
+        if (baileysFields) baileysFields.style.display = 'none';
+
+        // Show selected
+        if (provider === 'meta' && metaFields) {
+            metaFields.style.display = 'block';
+        } else if (provider === 'baileys' && baileysFields) {
+            baileysFields.style.display = 'block';
+        } else if (twilioFields) {
+            twilioFields.style.display = 'block';
+        }
+    }
+
+    function toggleEmailFields() {
+        const provider = document.getElementById('emailProvider').value;
+        const sendgridFields = document.getElementById('sendgridFields');
+        const smtpFields = document.getElementById('smtpFields');
+
+        if (provider === 'smtp') {
+            sendgridFields.style.display = 'none';
+            smtpFields.style.display = 'block';
+        } else {
+            sendgridFields.style.display = 'block';
+            smtpFields.style.display = 'none';
+        }
+    }
+
+    async function submitConnect(type) {
+        let credentials = {};
+        let provider = 'twilio';
+
+        if (type === 'whatsapp') {
+            provider = document.getElementById('whatsappProvider').value;
+            if (provider === 'meta') {
+                const token = getSecretValue('metaToken');
+                credentials = {
+                    phone_number_id: document.getElementById('metaPhoneId').value,
+                    waba_id: document.getElementById('metaWabaId').value,
+                    verify_token: document.getElementById('metaVerifyToken').value,
+                    phone_number: document.getElementById('metaPhoneDisplay').value
+                };
+                if (token) credentials.access_token = token;
+            } else if (provider === 'baileys') {
+                // Baileys - no credentials needed, just init session
+                credentials = {};
+            } else {
+                // Twilio WhatsApp
+                const authToken = getSecretValue('waTwilioToken');
+                credentials = {
+                    account_sid: document.getElementById('waTwilioSid').value,
+                    phone_number: document.getElementById('waTwilioPhone').value
+                };
+                if (authToken) credentials.auth_token = authToken;
+            }
+        } else if (type === 'sms') {
+            const authToken = getSecretValue('authToken');
+            credentials = {
+                account_sid: document.getElementById('accountSid').value,
+                phone_number: document.getElementById('phoneNumber').value
+            };
+            if (authToken) credentials.auth_token = authToken;
+        } else if (type === 'voice') {
+            provider = document.getElementById('voiceProvider').value;
+            if (provider === 'twilio') {
+                const authToken = getSecretValue('authToken');
+                credentials = {
+                    account_sid: document.getElementById('accountSid').value,
+                    phone_number: document.getElementById('phoneNumber').value
+                };
+                if (authToken) credentials.auth_token = authToken;
+            } else {
+                const livekitSecret = getSecretValue('livekitSecret');
+                credentials = {
+                    livekit_url: document.getElementById('livekitUrl').value,
+                    livekit_api_key: document.getElementById('livekitKey').value,
+                    livekit_caller_id: document.getElementById('livekitCallerId').value
+                };
+                if (livekitSecret) credentials.livekit_api_secret = livekitSecret;
+            }
+
+        } else if (type === 'email') {
+            // SMTP/IMAP Only
+            provider = 'smtp'; // Hardcode provider to smtp as it's the only option
+            const emailPass = getSecretValue('emailPass');
+            credentials = {
+                from_email: document.getElementById('fromEmail').value,
+                imap_host: document.getElementById('imapHost').value,
+                imap_port: document.getElementById('imapPort').value,
+                imap_encryption: document.getElementById('imapEnc').value,
+                smtp_host: document.getElementById('smtpHost').value,
+                smtp_port: document.getElementById('smtpPort').value,
+                smtp_encryption: document.getElementById('smtpEnc').value,
+                email_user: document.getElementById('emailUser').value
+            };
+            if (emailPass) credentials.email_pass = emailPass;
+        } else if (type === 'telegram') {
+            const token = document.getElementById('telegramToken').value;
+            const existingToken = channelsData['telegram']?.credentials?.telegram_token || '';
+            const isAlreadyConnected = channelsData['telegram']?.status === 'connected';
+
+            // If not connected and no token provided, error
+            if (!isAlreadyConnected && !token) {
+                showToast('Bot Token required', 'error');
+                return;
+            }
+
+            credentials = {};
+            // Only send token if it changed
+            if (token && token !== existingToken) {
+                credentials.telegram_token = token;
+            }
+        } else if (type === 'webchat') {
+            credentials = {};
+        }
+
+        try {
+            const response = await API.post('/channels/connect', {
+                type,
+                provider, // Send provider
+                credentials
+            });
+
+            // Special handling for Baileys - start QR polling
+            if (type === 'whatsapp' && provider === 'baileys') {
+                showToast('Session initiated. Loading QR code...', 'info');
+                startBaileysQrPolling();
+                return; // Don't close modal yet
+            }
+
+            closeModal();
+            showToast('Channel connected successfully!', 'success');
+            loadChannels();
+        } catch (e) {
+            showToast('Error connecting channel', 'error');
+        }
+    }
+
+    // =====================================================
+    // BAILEYS QR POLLING FUNCTIONS
+    // =====================================================
+
+    let baileysPollingInterval = null;
+
+    async function startBaileysQrPolling() {
+        const qrContainer = document.getElementById('baileysQrContainer');
+        const statusContainer = document.getElementById('baileysStatusContainer');
+
+        if (!qrContainer) return;
+
+        // Show loading state
+        qrContainer.innerHTML = '<div class="spinner"></div><p class="text-muted mt-sm">Loading QR code...</p>';
+
+        // Clear any existing interval
+        if (baileysPollingInterval) {
+            clearInterval(baileysPollingInterval);
+        }
+
+        // Poll every 2 seconds
+        baileysPollingInterval = setInterval(async () => {
+            try {
+                // First check status using API helper (handles token automatically)
+                const statusData = await API.get('/channels/whatsapp/status');
+
+                if (statusData.connected) {
+                    // Connected! Stop polling and show success
+                    clearInterval(baileysPollingInterval);
+                    baileysPollingInterval = null;
+
+                    qrContainer.style.display = 'none';
+                    if (statusContainer) {
+                        statusContainer.style.display = 'block';
+                        lucide.createIcons();
+                    }
+
+                    showToast('WhatsApp connected successfully!', 'success');
+
+                    // Close modal after a delay
+                    setTimeout(() => {
+                        closeModal();
+                        loadChannels();
+                    }, 2000);
+                    return;
+                }
+
+                // Not connected, try to get QR
+                // Use fetch directly because response is SVG text, not JSON
+                const token = API.token;
+                const qrRes = await fetch(`/api/channels/whatsapp/qr?t=${Date.now()}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (qrRes.ok) {
+                    const contentType = qrRes.headers.get('content-type');
+                    if (contentType && contentType.includes('svg')) {
+                        const svgText = await qrRes.text();
+                        qrContainer.innerHTML = svgText;
+                        // Style the SVG
+                        const svg = qrContainer.querySelector('svg');
+                        if (svg) {
+                            svg.style.maxWidth = '280px';
+                            svg.style.height = 'auto';
+                        }
+                    } else {
+                        // JSON response - still waiting
+                        const data = await qrRes.json();
+                        if (data.status === 'waiting') {
+                            qrContainer.innerHTML = '<div class="spinner"></div><p class="text-muted mt-sm">Generating QR code...</p>';
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('QR polling error:', e);
+            }
+        }, 2000);
+
+        // Stop polling after 5 minutes
+        setTimeout(() => {
+            if (baileysPollingInterval) {
+                clearInterval(baileysPollingInterval);
+                baileysPollingInterval = null;
+                qrContainer.innerHTML = '<p class="text-danger">QR code expired. Click Connect to try again.</p>';
+            }
+        }, 5 * 60 * 1000);
+    }
+
+    // Clean up polling when modal closes
+    const originalCloseModal = window.closeModal;
+    window.closeModal = function () {
+        if (baileysPollingInterval) {
+            clearInterval(baileysPollingInterval);
+            baileysPollingInterval = null;
+        }
+        if (originalCloseModal) originalCloseModal();
+    };
+
+    function connectIntegration(type) {
+        let fields = '';
+        let title = '';
+
+        // Pre-fill data from integrationKeys
+        const keys = integrationKeys || {};
+
+        if (type === 'calendar' || type === 'sheets') {
+            title = 'Connect Google Service Account';
+            // Determine if configured (we might have a boolean or the actual JSON string if unmasked)
+            // Backend returns 'google_service_account_configured' boolean, but relies on 'google_service_account' key for data?
+            // Wait, get_llm_config logic was: 'google_service_account_configured': bool(...)
+            // If I want to Edit, I need the actual JSON. 
+            // I should check if I reverted masking for 'google_service_account'.
+            // In companies.py I see: 'google_service_account_configured': bool(company.api_keys.get('google_service_account'))
+            // I need to change companies.py to return the actual JSON string if I want to edit it!
+            // But for now, let's assume we might prompt to re-enter if masked.
+            // Actually, user wants "recover data". I must UNMASK google_service_account in backend too.
+            // I will do that in next step. For now, let's put the placeholder logic.
+            const currentJson = keys.google_service_account || '';
+
+            fields = `
+                <div class="alert alert-info mb-md">
+                    <small>To connect Google Calendar and Sheets securely, please provide your <strong>Service Account JSON</strong> key.</small>
+                    <br>
+                    <small><a href="#" onclick="alert('Instructions: Go to Google Cloud Console -> IAM & Admin -> Service Accounts -> Create Key -> JSON')">How to get this?</a></small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Service Account JSON</label>
+                    <textarea class="form-textarea" id="serviceAccountJson" rows="8" placeholder='{"type": "service_account", ...}'>${currentJson}</textarea>
+                </div>
+            `;
+        } else if (type === 'paypal') {
+            title = 'Connect PayPal';
+            fields = `
+                <div class="form-group">
+                    <label class="form-label">Client ID</label>
+                    <input type="text" class="form-input" id="paypalId" value="${keys.paypal_id || ''}" placeholder="Your PayPal Client ID">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Client Secret</label>
+                    <div class="input-group">
+                        <input type="password" class="form-input" id="paypalSecret" value="${keys.paypal_secret || ''}" placeholder="Your PayPal Client Secret">
+                        <button class="btn btn-icon" type="button" onclick="togglePassword('paypalSecret')">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label class="form-label">Mode</label>
+                    <select class="form-select" id="paypalMode">
+                        <option value="sandbox" ${keys.paypal_mode === 'sandbox' ? 'selected' : ''}>Sandbox</option>
+                        <option value="live" ${keys.paypal_mode === 'live' ? 'selected' : ''}>Live</option>
+                    </select>
+                </div>
+            `;
+        }
+
+        const body = `
+            ${fields}
+        `;
+
+        const footer = `
+            <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitIntegration('${type}')">Connect</button>
+        `;
+
+        openModal(title, body, footer);
+        setTimeout(() => lucide.createIcons(), 100);
+    }
+
+    async function submitIntegration(type) {
+        try {
+            const apiKeys = {};
+
+            if (type === 'calendar' || type === 'sheets') {
+                const jsonStr = document.getElementById('serviceAccountJson').value;
+                try {
+                    // Validate JSON
+                    JSON.parse(jsonStr);
+                    apiKeys.google_service_account = jsonStr;
+                } catch (e) {
+                    showToast('Invalid JSON format', 'error');
+                    return;
+                }
+            } else if (type === 'paypal') {
+                const pId = document.getElementById('paypalId').value;
+                const pSecret = document.getElementById('paypalSecret').value;
+                const pMode = document.getElementById('paypalMode').value;
+
+                if (pId) apiKeys.paypal_id = pId;
+                if (pSecret) apiKeys.paypal_secret = pSecret;
+                if (pMode) apiKeys.paypal_mode = pMode;
+            }
+
+            // We use the same endpoint as LLM config to store these in company.api_keys
+            await API.put('/companies/llm-config', {
+                api_keys: apiKeys
+            });
+
+            closeModal();
+            showToast('Integration connected successfully!', 'success');
+            // Reload to update badges (logic needed in loadChannels or similiar if we want badges to update)
+            // For now, reload page or refresh local state
+            window.location.reload();
+
+        } catch (e) {
+            console.error(e);
+            showToast('Error connecting integration', 'error');
+        }
+    }
+
+    function showWebChatCode() {
+        const channel = channelsData['webchat'];
+        if (!channel || !channel.credentials || !channel.credentials.widget_id) {
+            showToast('Web Chat is not configured properly.', 'error');
+            return;
+        }
+
+        const widgetId = channel.credentials.widget_id;
+        const scriptUrl = `${window.location.origin}/static/js/widget.js`;
+
+        // Code Snippet
+        const code = `<script>
+  (function(w,d,s,id){
+      var js,fjs=d.getElementsByTagName(s)[0];
+      if(d.getElementById(id))return;
+      js=d.createElement(s);js.id=id;
+      js.src="${scriptUrl}?id=${widgetId}";
+      fjs.parentNode.insertBefore(js,fjs);
+  }(window,document,'script','pymai-widget'));
+<\/script>`;
+
+        const body = `
+            <p class="mb-md">Copy and paste this code into your website's HTML, before the closing <code>&lt;/body&gt;</code> tag.</p>
+            <div class="form-group">
+                <textarea class="form-textarea" rows="8" readonly onclick="this.select()" style="font-family: monospace; font-size: 12px;">${code}</textarea>
+            </div>
+        `;
+
+        openModal(
+            'Install Web Chat',
+            body,
+            '<button class="btn btn-primary" onclick="closeModal()">Done</button>'
+        );
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadChannels();
+        lucide.createIcons();
+
+        // Check for Google OAuth Return
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('google_connected') === 'true') {
+            const pendingType = localStorage.getItem('pending_google_type');
+            if (pendingType) {
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                // Trigger flow again (will now be connected)
+                connectGoogleIntegration(pendingType, true);
+                localStorage.removeItem('pending_google_type');
+            }
+        }
+    });
+</script>
+{% endblock %}

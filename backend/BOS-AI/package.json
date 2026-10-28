@@ -1,0 +1,32 @@
+{
+  "name": "bos-ai",
+  "version": "1.0.0",
+  "description": "Business Operating System with AI Agent Suite and MCP Automation",
+  "main": "src/index.js",
+  "scripts": {
+    "test:mcp": "node test-mcp-system.js",
+    "test:mcp:verbose": "node test-mcp-system.js --verbose",
+    "test:mcp:quick": "node test-mcp-system.js --quick",
+    "install:mcps": "./scripts/install-bos-ai-mcps.sh",
+    "check:mcps": "./scripts/check-mcp-status.sh",
+    "setup": "npm install && ./scripts/install-bos-ai-mcps.sh"
+  },
+  "keywords": [
+    "business-operating-system",
+    "ai-agents",
+    "mcp-automation",
+    "model-context-protocol"
+  ],
+  "author": "BOS-AI Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.6.4"
+  }
+}

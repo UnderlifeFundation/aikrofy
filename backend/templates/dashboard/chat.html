@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Chat - Aikrofy{% endblock %}
+{% block header_title %}Admin Chat{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-messages" id="chatMessages">
+        <div class="chat-message">
+            <div class="chat-message-avatar">AI</div>
+            <div class="chat-message-content">
+                <p>Hello! I'm your AI assistant. How can I help you today? I can help you with:</p>
+                <ul style="margin-top: 8px; padding-left: 20px; color: var(--text-secondary);">
+                    <li>View conversation reports and analytics</li>
+                    <li>Check customer information</li>
+                    <li>Review calendar and scheduled meetings</li>
+                    <li>Query your knowledge base</li>
+                    <li>Get summaries of recent activities</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-input-container">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..."
+            onkeypress="handleKeyPress(event)">
+        <button class="btn btn-primary btn-icon" onclick="sendMessage()">
+            <i data-lucide="send"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadChatHistory() {
+        try {
+            const data = await API.get('/chat/history');
+
+            if (data.messages && data.messages.length > 0) {
+                const container = document.getElementById('chatMessages');
+                container.innerHTML = '';
+
+                data.messages.forEach(msg => {
+                    addMessageToChat(msg.role, msg.content);
+                });
+            }
+        } catch (e) {
+            console.log('Error loading chat history:', e);
+        }
+    }
+
+    function addMessageToChat(role, content) {
+        const container = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${role === 'user' ? 'user' : ''}`;
+
+        messageDiv.innerHTML = `
+            <div class="chat-message-avatar">${role === 'user' ? 'You' : 'AI'}</div>
+            <div class="chat-message-content">${content}</div>
+        `;
+
+        container.appendChild(messageDiv);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message to chat
+        addMessageToChat('user', message);
+        input.value = '';
+
+        // Show typing indicator
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = `
+            <div class="chat-message-avatar">AI</div>
+            <div class="chat-message-content">
+                <span style="color: var(--text-muted);">Thinking...</span>
+            </div>
+        `;
+        document.getElementById('chatMessages').appendChild(typingDiv);
+
+        try {
+            const data = await API.post('/chat/admin/message', { content: message });
+
+            // Remove typing indicator
+            document.getElementById('typingIndicator')?.remove();
+
+            // Add assistant response
+            if (data.assistant_message) {
+                addMessageToChat('assistant', data.assistant_message.content);
+            }
+        } catch (e) {
+            document.getElementById('typingIndicator')?.remove();
+            addMessageToChat('assistant', 'Sorry, I encountered an error. Please try again.');
+        }
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadChatHistory();
+        document.getElementById('chatInput').focus();
+        lucide.createIcons();
+
+        // Setup Socket.IO for real-time updates
+        if (typeof io !== 'undefined') {
+            const socket = io();
+
+            // Listen for call reports
+            socket.on('call_report', function (data) {
+                console.log('📞 Call report received:', data);
+                addMessageToChat('assistant', data.content);
+            });
+
+            // Listen for new messages in general
+            socket.on('new_message', function (data) {
+                console.log('💬 New message received:', data);
+                if (data.role === 'assistant') {
+                    addMessageToChat('assistant', data.content);
+                }
+            });
+
+            console.log('✅ Socket.IO connected for real-time updates');
+        } else {
+            console.warn('Socket.IO not available, real-time updates disabled');
+        }
+    });
+</script>
+{% endblock %}

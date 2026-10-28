@@ -1,0 +1,75 @@
+# PymAI Backend Requirements (Synchronized with enpiai + Voice)
+# Core Web & API (FastAPI Native)
+PyMySQL==1.1.2
+SQLAlchemy==2.0.48
+Werkzeug==3.1.6
+gunicorn==21.2.0
+fastapi==0.115.6
+uvicorn==0.34.0
+python-socketio==5.16.1
+python-engineio==4.13.1
+Jinja2==3.1.6
+
+
+
+# AI & LLM (LangChain v1.2 stack)
+langchain==1.2.10
+langchain-community==0.4.1
+langchain-core==1.2.17
+langchain-openai==1.1.10
+langgraph==1.0.10
+langsmith==0.7.14
+openai==2.26.0
+anthropic==0.84.0
+google-generativeai==0.8.6
+pydantic==2.12.5
+pydantic-settings==2.13.1
+tenacity==9.1.4
+tiktoken==0.12.0
+
+# Voice & Realtime (LiveKit)
+livekit-api==1.1.0
+livekit-agents==1.5.1
+livekit-plugins-openai==1.5.1
+# livekit-plugins-silero==1.5.1  # Comentado por incompatibilidad con Python 3.14 (onnxruntime)
+livekit-plugins-noise-cancellation==0.2.5
+edge-tts==7.2.8
+
+# Task & Database
+celery==5.6.2
+redis==6.4.0
+pinecone==8.1.0
+
+# Integrations
+hubspot-api-client==12.0.0
+google-api-python-client==2.192.0
+google-auth-oauthlib==1.3.0
+paypal-agent-toolkit>=1.1.0
+twilio>=8.0.0
+
+# Utilities
+bcrypt==5.0.0
+cryptography==46.0.5
+python-dotenv==1.2.2
+python-dateutil==2.9.0.post0
+requests==2.32.5
+validators==0.35.0
+email-validator>=2.0.0
+reportlab==4.4.10
+PyJWT==2.11.0
+PyYAML==6.0.3
+openpyxl==3.1.5
+pdfminer.six==20251230
+pdfplumber==0.11.9
+python-docx==1.2.0
+lxml==6.0.2
+pillow==12.1.1
+tqdm==4.67.3
+eventlet==0.33.3
+
+# Development & Testing
+pytest==9.0.2
+
+# MCP & Server Sent Events (needed for backend and routing)
+mcp==1.28.1
+sse-starlette==2.4.1

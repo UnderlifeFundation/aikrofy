@@ -1,0 +1,394 @@
+---
+name: saas-email
+description: Implement transactional email for SaaS applications using Resend or Postmark — welcome emails, password resets, email verification, notifications, and plain-text/HTML templates. Use when building email, transactional email, email-sending, notification, or messaging features.
+version: 1.0.0
+category: communication
+triggers:
+  - email
+  - transactional email
+  - email template
+  - send email
+  - email notification
+  - resend
+  - sendgrid
+  - postmark
+  - email queue
+  - email delivery
+specialist: "@developer"
+stack_aware: true
+complexity: beginner
+estimated_tokens: 3200
+dependencies: []
+---
+
+# SaaS Transactional Email
+
+## Capability
+
+Implement reliable transactional email delivery for SaaS applications including templating, queuing, delivery tracking, and provider abstraction. Covers common email types: welcome, verification, password reset, notifications, and invoices.
+
+## Use Cases
+
+- Welcome and onboarding emails
+- Email verification and password reset
+- Notification emails (activity alerts, reminders)
+- Invoice and receipt emails
+- Team invitation emails
+- Digest and summary emails
+
+## When NOT to use this skill
+
+This skill covers transactional email (welcome, verification, password reset, invitations, notifications) via Resend / Postmark / SendGrid with queues and retries. It is not the right fit for:
+
+- **Marketing automation** (drip campaigns, segmentation, behavioural sends). Use Customer.io, Iterable, or Braze. Deliverability and unsubscribe rules differ.
+- **Newsletter publishing.** Use Beehiiv, Substack, ConvertKit, Buttondown.
+- **High-volume cold outbound sales emails.** Use Lemlist, Apollo, Outreach. Deliverability and warmup patterns are different.
+- **SMS or push notifications.** Different transport; use Twilio (SMS) or APNs/FCM (push) with their own queueing.
+- **Operational alerts to on-call.** Use PagerDuty, Opsgenie. Email is not the right channel for incident notifications.
+
+## Patterns
+
+### Email Service Abstraction
+
+**When to use**: Decouple email sending from specific provider (Resend, SendGrid, etc.)
+
+**Implementation**: Create provider-agnostic interface with consistent API.
+
+```typescript
+// Email service interface
+interface EmailService {
+  send(options: SendEmailOptions): Promise<EmailResult>;
+  sendBatch(emails: SendEmailOptions[]): Promise<EmailResult[]>;
+}
+
+interface SendEmailOptions {
+  to: string | string[];
+  subject: string;
+  template: string;
+  data: Record<string, unknown>;
+  replyTo?: string;
+  tags?: string[];
+}
+
+// Resend implementation
+class ResendEmailService implements EmailService {
+  private client: Resend;
+
+  constructor(apiKey: string) {
+    this.client = new Resend(apiKey);
+  }
+
+  async send(options: SendEmailOptions): Promise<EmailResult> {
+    const html = await renderTemplate(options.template, options.data);
+
+    const result = await this.client.emails.send({
+      from: 'Your App <noreply@yourapp.com>',
+      to: Array.isArray(options.to) ? options.to : [options.to],
+      subject: options.subject,
+      html,
+      reply_to: options.replyTo,
+      tags: options.tags?.map(t => ({ name: t, value: 'true' }))
+    });
+
+    return {
+      id: result.id,
+      success: true
+    };
+  }
+
+  async sendBatch(emails: SendEmailOptions[]): Promise<EmailResult[]> {
+    return Promise.all(emails.map(e => this.send(e)));
+  }
+}
+
+// Usage
+const emailService = new ResendEmailService(process.env.RESEND_API_KEY);
+
+await emailService.send({
+  to: 'user@example.com',
+  subject: 'Welcome to Our App',
+  template: 'welcome',
+  data: { userName: 'John', appName: 'MyApp' }
+});
+```
+
+### React Email Templates
+
+**When to use**: Build maintainable, styled email templates with React
+
+**Implementation**: Use React Email for component-based email templates.
+
+```tsx
+// emails/welcome.tsx
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Section,
+  Text
+} from '@react-email/components';
+
+interface WelcomeEmailProps {
+  userName: string;
+  appName: string;
+  dashboardUrl: string;
+}
+
+export default function WelcomeEmail({
+  userName,
+  appName,
+  dashboardUrl
+}: WelcomeEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Welcome to {appName}!</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>Welcome, {userName}!</Heading>
+          <Text style={text}>
+            Thanks for signing up for {appName}. We're excited to have you!
+          </Text>
+          <Section style={buttonContainer}>
+            <Button style={button} href={dashboardUrl}>
+              Go to Dashboard
+            </Button>
+          </Section>
+          <Text style={footer}>
+            If you didn't create this account, please ignore this email.
+          </Text>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+const main = { backgroundColor: '#f6f9fc', padding: '40px 0' };
+const container = { backgroundColor: '#ffffff', padding: '40px', borderRadius: '8px' };
+const h1 = { color: '#1a1a1a', fontSize: '24px' };
+const text = { color: '#4a4a4a', fontSize: '16px', lineHeight: '24px' };
+const buttonContainer = { textAlign: 'center' as const, margin: '32px 0' };
+const button = { backgroundColor: '#5469d4', color: '#fff', padding: '12px 24px', borderRadius: '6px' };
+const footer = { color: '#8898aa', fontSize: '12px' };
+
+// Render template
+import { render } from '@react-email/render';
+import WelcomeEmail from './emails/welcome';
+
+async function renderTemplate(template: string, data: Record<string, unknown>) {
+  const templates = {
+    welcome: WelcomeEmail,
+    verification: VerificationEmail,
+    passwordReset: PasswordResetEmail,
+    invitation: InvitationEmail
+  };
+
+  const Component = templates[template];
+  return render(<Component {...data} />);
+}
+```
+
+### Email Queue with Retries
+
+**When to use**: Reliable email delivery with failure handling
+
+**Implementation**: Queue emails for async processing with retry logic.
+
+```typescript
+// Email job processor
+import { Queue, Worker } from 'bullmq';
+
+const emailQueue = new Queue('emails', {
+  connection: redis,
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: {
+      type: 'exponential',
+      delay: 1000 // 1s, 2s, 4s
+    },
+    removeOnComplete: 100,
+    removeOnFail: 1000
+  }
+});
+
+// Add email to queue
+async function queueEmail(options: SendEmailOptions) {
+  await emailQueue.add('send', options, {
+    priority: getEmailPriority(options.template)
+  });
+}
+
+// Email priorities
+function getEmailPriority(template: string): number {
+  const priorities = {
+    passwordReset: 1,   // Highest
+    verification: 2,
+    invitation: 3,
+    notification: 5,
+    digest: 10          // Lowest
+  };
+  return priorities[template] ?? 5;
+}
+
+// Worker to process queue
+const emailWorker = new Worker('emails', async (job) => {
+  const { to, subject, template, data } = job.data;
+
+  try {
+    const result = await emailService.send({ to, subject, template, data });
+
+    // Log success
+    await logEmailEvent(result.id, 'sent', { to, template });
+
+    return result;
+  } catch (error) {
+    // Log failure
+    await logEmailEvent(null, 'failed', { to, template, error: error.message });
+    throw error; // Trigger retry
+  }
+}, { connection: redis });
+
+// Handle final failure
+emailWorker.on('failed', async (job, error) => {
+  if (job.attemptsMade >= job.opts.attempts) {
+    await alertOnEmailFailure(job.data, error);
+  }
+});
+```
+
+### Common Email Templates
+
+**When to use**: Standard SaaS email types
+
+```typescript
+// Email sending helpers
+const emails = {
+  async sendWelcome(user: User) {
+    await queueEmail({
+      to: user.email,
+      subject: 'Welcome to MyApp!',
+      template: 'welcome',
+      data: {
+        userName: user.name,
+        appName: 'MyApp',
+        dashboardUrl: `${APP_URL}/dashboard`
+      }
+    });
+  },
+
+  async sendVerification(user: User, token: string) {
+    await queueEmail({
+      to: user.email,
+      subject: 'Verify your email',
+      template: 'verification',
+      data: {
+        userName: user.name,
+        verifyUrl: `${APP_URL}/verify?token=${token}`
+      }
+    });
+  },
+
+  async sendPasswordReset(user: User, token: string) {
+    await queueEmail({
+      to: user.email,
+      subject: 'Reset your password',
+      template: 'passwordReset',
+      data: {
+        userName: user.name,
+        resetUrl: `${APP_URL}/reset-password?token=${token}`,
+        expiresIn: '1 hour'
+      }
+    });
+  },
+
+  async sendInvitation(invitation: Invitation, inviter: User) {
+    await queueEmail({
+      to: invitation.email,
+      subject: `${inviter.name} invited you to join ${invitation.orgName}`,
+      template: 'invitation',
+      data: {
+        inviterName: inviter.name,
+        orgName: invitation.orgName,
+        acceptUrl: `${APP_URL}/accept-invite?token=${invitation.token}`
+      }
+    });
+  }
+};
+```
+
+## Stack Implementations
+
+### {{stack.services.email}} Integration
+
+**Resend (Recommended)**:
+```typescript
+import { Resend } from 'resend';
+const resend = new Resend(process.env.RESEND_API_KEY);
+```
+
+**SendGrid**:
+```typescript
+import sgMail from '@sendgrid/mail';
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+```
+
+**Postmark**:
+```typescript
+import { ServerClient } from 'postmark';
+const postmark = new ServerClient(process.env.POSTMARK_API_KEY);
+```
+
+## Exit Criteria
+
+Before declaring this skill's work complete, run each check below and paste the output. "Looks right" is not sufficient. Items marked **gateable** can be wired into `project/gates/` for automated phase-exit checks.
+
+| # | Check | Verification | Pass condition | Gateable |
+|---|-------|-------------|----------------|----------|
+| 1 | Email sends are queued, not inline | `grep -rEn "emailService\.send\|client\.emails\.send" --include="*.ts" --include="*.js" --include="*.py" . \| grep -v -E "queue\|worker\|test\|spec"` | Zero matches in request-path handlers. Sends happen inside worker/queue consumer. | yes |
+| 2 | Retry with exponential backoff | `grep -rEn "attempts.*[0-9]\+|backoff.*exponential" --include="*.ts" --include="*.js" --include="*.py" .` | Match in queue/job options. | yes |
+| 3 | Email delivery logged | `grep -rEn "logEmailEvent\|email.*log.*sent\|email.*log.*failed" --include="*.ts" --include="*.js" --include="*.py" .` | Match in worker; logs success and failure with correlation ID. | yes |
+| 4 | Templates use a templating system | `grep -rEn "renderTemplate\|@react-email\|MJML\|Jinja2.*email" --include="*.ts" --include="*.js" --include="*.tsx" --include="*.py" .` | Match. No inline HTML strings for templated emails. | yes |
+| 5 | No HTML strings concatenated with user input | `grep -rEn "<.*>.*\$\{.*req\..*\}" --include="*.ts" --include="*.js" .` | Zero matches. (Defends against email-injection.) | yes |
+| 6 | Rate limit on email sending per user | `grep -rEn "rateLimit.*email\|email.*rateLimit" --include="*.ts" --include="*.js" --include="*.py" .` | Match. Prevents abuse of password-reset / invitation as spam relay. | yes |
+| 7 | Failed-email alerts wired | Read worker `failed` handler. | Calls `alertOnEmailFailure` (or equivalent) on final attempt failure. | manual |
+| 8 | Plain-text fallback for HTML | Read one templated email render call. | Render produces both HTML and plain-text, or template framework does so by default. | manual |
+
+If any check fails, do not declare done. Fix and re-run.
+
+## Anti-Patterns (Excuse / Rebuttal)
+
+### Excuse: "Sending the email inline is simpler; the email provider is fast enough."
+
+**Rebuttal**: Until it isn't. The provider has a five-second outage and your signup endpoint times out. The provider rate-limits you and signups start failing. The provider's TLS cert expires (it happens) and signups 500. Any inline send couples your request path to a third party's availability. Queue every email, retry on failure with exponential backoff, return success to the user as soon as the user record exists.
+
+```typescript
+// WRONG: Blocks request, no retry on failure
+app.post('/signup', async (req, res) => {
+  await createUser(req.body);
+  await emailService.send({ ... }); // Blocks!
+  res.json({ success: true });
+});
+
+// RIGHT: Queue and return immediately
+app.post('/signup', async (req, res) => {
+  const user = await createUser(req.body);
+  await queueEmail({ ... }); // Non-blocking
+  res.json({ success: true });
+});
+```
+
+### Excuse: "I'll just inline the email HTML; it's only one or two emails."
+
+**Rebuttal**: It is never one or two for long, and inline HTML rots the moment branding changes. Use a template system from the first email; switching costs go up sharply once you have ten. React Email or equivalent gives you components, type-safe props, plain-text fallbacks, and previewable templates.
+
+```typescript
+// WRONG: HTML in code, hard to maintain
+const html = `<h1>Welcome ${name}</h1><p>Thanks for signing up...</p>`;
+
+// RIGHT: Use template system
+const html = await renderTemplate('welcome', { name });
+```

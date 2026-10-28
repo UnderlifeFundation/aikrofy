@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aikrofy - Login">
+    <title>Login - Aikrofy</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <style>
+        .auth-layout {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+            padding: var(--spacing-lg);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        .auth-header {
+            padding: var(--spacing-xl);
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .auth-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .auth-logo .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .auth-body {
+            padding: var(--spacing-xl);
+        }
+
+        .auth-footer {
+            padding: var(--spacing-lg) var(--spacing-xl);
+            text-align: center;
+            background: var(--surface-hover);
+            border-top: 1px solid var(--border);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius);
+            margin-bottom: var(--spacing-lg);
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-layout">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <div class="logo-icon">OP</div>
+                    <span>Aikrofy</span>
+                </div>
+                <p style="opacity: 0.9;">Multi-Agent System Platform</p>
+            </div>
+
+            <div class="auth-body">
+                <h2 style="margin-bottom: var(--spacing-lg);">Welcome Back</h2>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" id="email" placeholder="you@company.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="password" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-full" id="submitBtn">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="/register">Create one</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('errorMessage');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+            errorMessage.classList.remove('visible');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store token
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+
+                    // Verify token works before redirecting
+                    const verifyResponse = await fetch('/api/auth/me', {
+                        headers: { 'Authorization': `Bearer ${data.access_token}` }
+                    });
+
+                    if (verifyResponse.ok) {
+                        // Token verified, redirect to dashboard
+                        window.location.href = '/dashboard';
+                    } else {
+                        console.error('Token verification failed:', await verifyResponse.text());
+                        errorMessage.textContent = 'Authentication error. Please try again.';
+                        errorMessage.classList.add('visible');
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('refresh_token');
+                    }
+                } else {
+                    errorMessage.textContent = data.error || 'Invalid credentials';
+                    errorMessage.classList.add('visible');
+                }
+            } catch (e) {
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorMessage.classList.add('visible');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+        }
+
+        // Check if already logged in with valid token
+        async function checkExistingAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/auth/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        window.location.href = '/dashboard';
+                    } else {
+                        // Token invalid, clear it
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('refresh_token');
+                    }
+                } catch (e) {
+                    // Error checking, clear token
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('refresh_token');
+                }
+            }
+        }
+        checkExistingAuth();
+    </script>
+</body>
+
+</html>

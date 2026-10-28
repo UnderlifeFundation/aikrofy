@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aikrofy - Multi-Agent System Platform">
+    <title>{% block title %}Aikrofy{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tools -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div className="logo-icon text-white bg-indigo-500 rounded-md p-1 px-2 font-bold">PA</div>
+                    <span>Aikrofy</span>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Dashboard</div>
+                    <a href="/dashboard"
+                        class="nav-item {% if request.path == '/dashboard' or request.path == '/' %}active{% endif %}">
+                        <i data-lucide="layout-dashboard" class="icon"></i>
+                        <span>Overview</span>
+                    </a>
+                    <a href="/analytics" class="nav-item {% if request.path == '/analytics' %}active{% endif %}">
+                        <i data-lucide="bar-chart-3" class="icon"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="/chat" class="nav-item {% if request.path == '/chat' %}active{% endif %}">
+                        <i data-lucide="message-circle" class="icon"></i>
+                        <span>Admin Chat</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Configuration</div>
+                    <a href="/agents" class="nav-item {% if request.path == '/agents' %}active{% endif %}">
+                        <i data-lucide="bot" class="icon"></i>
+                        <span>Agents</span>
+                    </a>
+                    <a href="/channels" class="nav-item {% if request.path == '/channels' %}active{% endif %}">
+                        <i data-lucide="plug" class="icon"></i>
+                        <span>Channels</span>
+                    </a>
+                    <a href="/documents" class="nav-item {% if request.path == '/documents' %}active{% endif %}">
+                        <i data-lucide="file-text" class="icon"></i>
+                        <span>Documents</span>
+                    </a>
+                    <a href="/employees" class="nav-item {% if request.path == '/employees' %}active{% endif %}">
+                        <i data-lucide="users" class="icon"></i>
+                        <span>Team</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}">
+                        <i data-lucide="settings" class="icon"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="nav-item" id="userMenu">
+                    <i data-lucide="user" class="icon"></i>
+                    <span id="userName">User</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="flex items-center gap-md">
+                    <button class="btn btn-ghost btn-icon mobile-menu-btn hidden" onclick="toggleSidebar()">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h1 class="header-title">{% block header_title %}Dashboard{% endblock %}</h1>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn btn-ghost btn-icon" onclick="toggleTheme()" title="Toggle theme">
+                        <i data-lucide="moon" id="themeIcon"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-icon" title="Notifications">
+                        <i data-lucide="bell"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal Container -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Modal Title</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <!-- Core JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // API Helper
+        const API = {
+            get token() {
+                return localStorage.getItem('token');
+            },
+
+            async request(endpoint, options = {}) {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                };
+
+                const currentToken = this.token;
+                if (currentToken) {
+                    headers['Authorization'] = `Bearer ${currentToken}`;
+                }
+
+                const response = await fetch(`/api${endpoint}`, {
+                    ...options,
+                    headers
+                });
+
+                if (response.status === 401) {
+                    // Token invalid or expired, clear and redirect to login
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('refresh_token');
+                    if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+                        window.location.href = '/login';
+                    }
+                    return null;
+                }
+
+                return response.json();
+            },
+
+            get(endpoint) {
+                return this.request(endpoint);
+            },
+
+            post(endpoint, data) {
+                return this.request(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+            },
+
+            put(endpoint, data) {
+                return this.request(endpoint, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+            },
+
+            delete(endpoint) {
+                return this.request(endpoint, {
+                    method: 'DELETE'
+                });
+            }
+        };
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            const icon = document.getElementById('themeIcon');
+            icon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'dark') {
+                document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+            }
+        }
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Modal Functions
+        function openModal(title, body, footer = '') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = body;
+            document.getElementById('modalFooter').innerHTML = footer;
+            document.getElementById('modalOverlay').classList.add('active');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeModal();
+            }
+        });
+
+        // Load user info
+        async function loadUserInfo() {
+            try {
+                const data = await API.get('/auth/me');
+                if (data.user) {
+                    document.getElementById('userName').textContent = data.user.name;
+                }
+            } catch (e) {
+                // Not logged in, redirect to login
+                if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+                    // window.location.href = '/login';
+                }
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

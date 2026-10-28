@@ -1,0 +1,1011 @@
+{% extends "base.html" %}
+
+{% block title %}Agent Configuration - Aikrofy{% endblock %}
+{% block header_title %}Agent Configuration{% endblock %}
+
+{% block content %}
+<div class="agents-page">
+    <!-- Agent Header -->
+    <div class="flex justify-between items-center mb-lg">
+        <div>
+            <h2>Multi-Agent System</h2>
+            <p class="text-muted">Configure your AI agent's capabilities, channels, and personality.</p>
+        </div>
+        <button class="btn btn-primary" onclick="createAgent()">
+            <i data-lucide="plus"></i>
+            Create Agent
+        </button>
+    </div>
+
+    <!-- Agent Selector -->
+    <div class="card mb-lg">
+        <div class="card-body">
+            <div class="flex items-center gap-lg">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label class="form-label">Select Agent</label>
+                    <select class="form-select" id="agentSelect" onchange="loadAgentFeatures()">
+                        <option value="">-- Select an agent --</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Status</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="agentActive" onchange="toggleAgentActive()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agent Configuration Panels -->
+    <div id="agentConfig" class="hidden">
+        <!-- Personality & Tone -->
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i data-lucide="smile" style="margin-right: 8px; color: var(--primary);"></i>
+                    Personality & Tone
+                </h3>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                    <div class="form-group">
+                        <label class="form-label">Agent Name</label>
+                        <input type="text" class="form-input" id="agentName" placeholder="e.g., Alex">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Agent Gender</label>
+                        <select class="form-select" id="agentGender">
+                            <option value="neutral">Neutral</option>
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tone</label>
+                    <div class="checkbox-group" id="toneOptions">
+                        <label class="checkbox-item">
+                            <input type="radio" name="tone" value="professional">
+                            <div class="checkbox-item-content">
+                                <div class="checkbox-item-label">Professional</div>
+                                <div class="checkbox-item-description">Business-like communication</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="tone" value="friendly">
+                            <div class="checkbox-item-content">
+                                <div class="checkbox-item-label">Friendly</div>
+                                <div class="checkbox-item-description">Warm and approachable</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="tone" value="receptionist">
+                            <div class="checkbox-item-content">
+                                <div class="checkbox-item-label">Receptionist</div>
+                                <div class="checkbox-item-description">Professional call screening</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="tone" value="sales">
+                            <div class="checkbox-item-content">
+                                <div class="checkbox-item-label">Sales</div>
+                                <div class="checkbox-item-description">Persuasive and helpful</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="tone" value="support">
+                            <div class="checkbox-item-content">
+                                <div class="checkbox-item-label">Support</div>
+                                <div class="checkbox-item-description">Patient problem-solver</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="radio" name="tone" value="concierge">
+                            <div class="checkbox-item-content">
+                                <div class="checkbox-item-label">Concierge</div>
+                                <div class="checkbox-item-description">Premium personalized service</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Objective</label>
+                    <select class="form-select" id="agentObjective">
+                        <option value="general">General Assistant</option>
+                        <option value="customer_service">Customer Service</option>
+                        <option value="sales">Sales</option>
+                        <option value="scheduling">Scheduling</option>
+                        <option value="lead_qualification">Lead Qualification</option>
+                        <option value="support">Support</option>
+                        <option value="payments">Payments</option>
+                        <option value="inventory">Inventory</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Telephony Provider</label>
+                    <select class="form-select" id="agentTelephony">
+                        <option value="">Default (Company Setting)</option>
+                        <option value="twilio">Twilio</option>
+                        <option value="livekit">LiveKit (VoIP)</option>
+                    </select>
+                    <small style="color: var(--text-muted);">Override company default for calls.</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Custom Personality Instructions</label>
+                    <textarea class="form-textarea" id="personalityPrompt"
+                        placeholder="Add custom personality traits, speaking style, or special instructions..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Communication Channels -->
+        <div class="checkbox-panel mb-lg">
+            <div class="checkbox-panel-header">
+                <i data-lucide="plug" class="icon"></i>
+                Communication Channels
+            </div>
+            <div class="checkbox-panel-body">
+                <div class="checkbox-group" id="channelFeatures">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Integrations -->
+        <div class="checkbox-panel mb-lg">
+            <div class="checkbox-panel-header">
+                <i data-lucide="link" class="icon"></i>
+                Integrations
+            </div>
+            <div class="checkbox-panel-body">
+                <div class="checkbox-group" id="integrationFeatures">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools & Capabilities -->
+        <div class="checkbox-panel mb-lg">
+            <div class="checkbox-panel-header">
+                <i data-lucide="wrench" class="icon"></i>
+                Tools & Capabilities
+            </div>
+            <div class="checkbox-panel-body">
+                <div class="checkbox-group" id="toolFeatures">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Features -->
+        <div class="checkbox-panel mb-lg">
+            <div class="checkbox-panel-header">
+                <i data-lucide="brain" class="icon"></i>
+                AI Features
+            </div>
+            <div class="checkbox-panel-body">
+                <div class="checkbox-group" id="aiFeatures">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-between">
+            <button class="btn btn-danger" onclick="deleteAgent()">
+                <i data-lucide="trash-2"></i>
+                Delete Agent
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="saveAgentConfig()">
+                <i data-lucide="save"></i>
+                Save Configuration
+            </button>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="noAgentSelected">
+        <div class="card">
+            <div class="card-body">
+                <div class="empty-state">
+                    <i data-lucide="bot" class="empty-state-icon"></i>
+                    <h4 class="empty-state-title">Select or Create an Agent</h4>
+                    <p class="empty-state-text">Choose an agent from the dropdown above or create a new one to configure
+                        its capabilities.</p>
+                    <button class="btn btn-primary" onclick="createAgent()">
+                        <i data-lucide="plus"></i>
+                        Create Your First Agent
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentAgentId = null;
+    let agents = [];
+
+    // Toggle password visibility
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const btn = input.parentElement.querySelector('button i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (btn) btn.setAttribute('data-lucide', 'eye-off');
+        } else {
+            input.type = 'password';
+            if (btn) btn.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+    }
+
+    // Helper to get value only if changed (not mask)
+    function getSecretValue(id) {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const val = el.value;
+        return (val && val !== '********') ? val : null;
+    }
+
+    let agentFeatures = {};
+
+    async function loadAgents() {
+        try {
+            const data = await API.get('/agents/');
+            const select = document.getElementById('agentSelect');
+
+            select.innerHTML = '<option value="">-- Select an agent --</option>';
+
+            if (data.agents && data.agents.length > 0) {
+                data.agents.forEach(agent => {
+                    const option = document.createElement('option');
+                    option.value = agent.id;
+                    option.textContent = agent.name;
+                    select.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.log('Error loading agents:', e);
+        }
+    }
+
+    async function loadAgentFeatures() {
+        const agentId = document.getElementById('agentSelect').value;
+
+        if (!agentId) {
+            document.getElementById('agentConfig').classList.add('hidden');
+            document.getElementById('noAgentSelected').classList.remove('hidden');
+            currentAgentId = null;
+            return;
+        }
+
+        currentAgentId = agentId;
+        document.getElementById('agentConfig').classList.remove('hidden');
+        document.getElementById('noAgentSelected').classList.add('hidden');
+
+        try {
+            // Load agent details
+            const agentData = await API.get(`/agents/${agentId}`);
+            const agent = agentData.agent;
+
+            document.getElementById('agentName').value = agent.name || '';
+            document.getElementById('agentActive').checked = agent.is_active;
+
+            // Set tone
+            const toneRadio = document.querySelector(`input[name="tone"][value="${agent.tone}"]`);
+            if (toneRadio) toneRadio.checked = true;
+
+            document.getElementById('agentObjective').value = agent.objective || 'general';
+            document.getElementById('agentTelephony').value = agent.telephony_provider || '';
+            document.getElementById('personalityPrompt').value = agent.system_prompt || '';
+
+            // Load features
+            const featuresData = await API.get(`/agents/${agentId}/features`);
+            agentFeatures = featuresData.features;
+
+            renderFeatures('channel', 'channelFeatures');
+            renderFeatures('integration', 'integrationFeatures');
+            renderFeatures('tool', 'toolFeatures');
+            renderFeatures('ai_feature', 'aiFeatures');
+
+            lucide.createIcons();
+        } catch (e) {
+            showToast('Error loading agent configuration', 'error');
+        }
+    }
+
+    function renderFeatures(category, containerId) {
+        const container = document.getElementById(containerId);
+        const features = agentFeatures[category] || [];
+
+        container.innerHTML = features.map(feature => `
+            <label class="checkbox-item">
+                <input type="checkbox" 
+                    data-feature-id="${feature.id}" 
+                    data-category="${category}"
+                    ${feature.is_enabled ? 'checked' : ''}
+                    onchange="toggleFeature(${feature.id}, this.checked)">
+                <div class="checkbox-item-content">
+                    <div class="checkbox-item-label">${feature.label}</div>
+                    <div class="checkbox-item-description">${feature.description || ''}</div>
+                </div>
+            </label>
+        `).join('');
+    }
+
+    async function toggleFeature(featureId, isEnabled) {
+        if (!currentAgentId) return;
+
+        try {
+            await API.put(`/agents/${currentAgentId}/features/${featureId}`, {
+                is_enabled: isEnabled
+            });
+
+            // If enabling a channel or integration, show setup modal
+            const checkbox = document.querySelector(`input[data-feature-id="${featureId}"]`);
+            if (checkbox && isEnabled) {
+                const category = checkbox.dataset.category;
+                if (category === 'channel' || category === 'integration') {
+                    showSetupModal(featureId);
+                }
+            }
+        } catch (e) {
+            showToast('Error updating feature', 'error');
+        }
+    }
+
+    async function showSetupModal(featureId) {
+        // Find the feature
+        let feature = null;
+        for (const category in agentFeatures) {
+            const found = agentFeatures[category].find(f => f.id === featureId);
+            if (found) {
+                feature = found;
+                break;
+            }
+        }
+
+        if (!feature) return;
+
+        let body = '';
+        let footer = '';
+
+        // Show loading state first
+        openModal(`Setup ${feature.label}`, '<div class="text-center p-lg"><span class="loader"></span> Loading configuration...</div>', '');
+
+        try {
+            if (feature.name === 'voice_calls') {
+                // ... Voice Call Logic (already implemented, keeping for completeness but consolidated)
+                let voiceConfig = {};
+                try {
+                    const res = await API.get('/channels/voice');
+                    if (res.channel) voiceConfig = res.channel;
+                } catch (e) { }
+
+                const credentials = voiceConfig.credentials || {};
+                const provider = credentials.provider || 'twilio';
+
+                body = `
+                    <p class="mb-lg">Configure <strong>Voice Calls</strong> provider.</p>
+                    <div class="form-group">
+                        <label class="form-label">Provider</label>
+                        <select class="form-select" id="setupVoiceProvider" onchange="toggleSetupVoiceFields()">
+                            <option value="twilio" ${provider === 'twilio' ? 'selected' : ''}>Twilio</option>
+                            <option value="livekit" ${provider === 'livekit' ? 'selected' : ''}>LiveKit (VoIP)</option>
+                        </select>
+                    </div>
+                    
+                    <div id="setupTwilioFields" style="display: ${provider === 'twilio' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label class="form-label">Twilio Account SID</label>
+                            <input type="text" class="form-input" id="setupAccountSid" value="${credentials.account_sid || ''}" placeholder="AC...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Twilio Auth Token</label>
+                            <div class="input-group">
+                            <input type="password" class="form-input" id="setupAuthToken" value="${credentials.auth_token || ''}" placeholder="Auth Token">
+                                <button class="btn btn-icon" type="button" onclick="togglePassword('setupAuthToken')"><i data-lucide="eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-input" id="setupPhoneNumber" value="${credentials.phone_number || ''}" placeholder="+1234...">
+                        </div>
+                    </div>
+                    
+                    <div id="setupLiveKitFields" style="display: ${provider === 'livekit' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label class="form-label">LiveKit URL</label>
+                            <input type="text" class="form-input" id="setupLiveKitUrl" value="${credentials.livekit_url || ''}" placeholder="wss://...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">API Key</label>
+                            <div class="input-group">
+                                <input type="password" class="form-input" id="setupLiveKitKey" value="${credentials.livekit_api_key || ''}" placeholder="API Key">
+                                <button class="btn btn-icon" type="button" onclick="togglePassword('setupLiveKitKey')"><i data-lucide="eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">API Secret</label>
+                            <div class="input-group">
+                            <input type="password" class="form-input" id="setupLiveKitSecret" value="${credentials.livekit_api_secret || ''}" placeholder="API Secret">
+                                <button class="btn btn-icon" type="button" onclick="togglePassword('setupLiveKitSecret')"><i data-lucide="eye"></i></button>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label class="form-label">Caller ID</label>
+                            <input type="text" class="form-input" id="setupLiveKitCallerId" value="${credentials.livekit_caller_id || ''}" placeholder="+1234...">
+                        </div>
+                    </div>
+                `;
+
+                footer = `
+                    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="submitVoiceSetup()">Save Configuration</button>
+                `;
+
+            } else if (feature.name === 'whatsapp') {
+                let chanConfig = {};
+                try {
+                    const res = await API.get(`/channels/${feature.name}`);
+                    if (res.channel) chanConfig = res.channel;
+                } catch (e) { }
+                const credentials = chanConfig.credentials || {};
+                const provider = credentials.provider || 'twilio';
+
+                body = `
+                    <p class="mb-lg">Configure <strong>WhatsApp</strong> credentials.</p>
+                    <div class="form-group">
+                        <label class="form-label">Provider</label>
+                        <select class="form-select" id="setupWhatsAppProvider" onchange="toggleSetupWhatsAppFields()">
+                            <option value="twilio" ${provider === 'twilio' ? 'selected' : ''}>Twilio</option>
+                            <option value="meta" ${provider === 'meta' ? 'selected' : ''}>Meta (Official Cloud API)</option>
+                        </select>
+                    </div>
+
+                    <div id="setupTwilioWAFields" style="display: ${provider === 'twilio' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label class="form-label">Twilio Account SID</label>
+                            <input type="text" class="form-input" id="setupTwilioSid" value="${credentials.account_sid || ''}" placeholder="AC...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Twilio Auth Token</label>
+                            <div class="input-group">
+                                <input type="password" class="form-input" id="setupTwilioToken" value="${credentials.auth_token ? '********' : ''}" placeholder="Auth Token">
+                                <button class="btn btn-icon" type="button" onclick="togglePassword('setupTwilioToken')"><i data-lucide="eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-input" id="setupTwilioPhone" value="${credentials.phone_number || ''}" placeholder="+1234...">
+                        </div>
+                    </div>
+
+                    <div id="setupMetaWAFields" style="display: ${provider === 'meta' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number ID</label>
+                            <input type="text" class="form-input" id="setupMetaPhoneId" value="${credentials.phone_number_id || ''}" placeholder="10060...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">WABA ID</label>
+                            <input type="text" class="form-input" id="setupMetaWabaId" value="${credentials.waba_id || ''}" placeholder="10945...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Access Token</label>
+                            <div class="input-group">
+                                <input type="password" class="form-input" id="setupMetaToken" value="${credentials.access_token ? '********' : ''}" placeholder="System User Token">
+                                <button class="btn btn-icon" type="button" onclick="togglePassword('setupMetaToken')"><i data-lucide="eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Verify Token</label>
+                            <input type="text" class="form-input" id="setupMetaVerify" value="${credentials.verify_token || ''}" placeholder="my_verify_token">
+                        </div>
+                         <div class="form-group">
+                            <label class="form-label">Display Phone Number</label>
+                            <input type="text" class="form-input" id="setupMetaDisplayPhone" value="${credentials.phone_number || ''}" placeholder="+1234...">
+                        </div>
+                    </div>
+                `;
+                footer = `
+                    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="submitChannelSetup('whatsapp')">Save Configuration</button>
+                `;
+
+            } else if (feature.name === 'sms') {
+                let chanConfig = {};
+                try {
+                    const res = await API.get(`/channels/${feature.name}`);
+                    if (res.channel) chanConfig = res.channel;
+                } catch (e) { }
+                const credentials = chanConfig.credentials || {};
+
+                body = `
+                    <p class="mb-lg">Configure <strong>SMS</strong> credentials (Twilio).</p>
+                     <div class="form-group">
+                        <label class="form-label">Twilio Account SID</label>
+                        <input type="text" class="form-input" id="setupAccountSid" value="${credentials.account_sid || ''}" placeholder="AC...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Twilio Auth Token</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="setupAuthToken" value="${credentials.auth_token ? '********' : ''}" placeholder="Auth Token">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('setupAuthToken')"><i data-lucide="eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-input" id="setupPhoneNumber" value="${credentials.phone_number || ''}" placeholder="+1234...">
+                    </div>
+                `;
+                footer = `
+                    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="submitChannelSetup('sms')">Save Configuration</button>
+                `;
+            } else if (feature.name === 'email') {
+                // Email
+                let chanConfig = {};
+                try {
+                    const res = await API.get('/channels/email');
+                    if (res.channel) chanConfig = res.channel;
+                } catch (e) { }
+                const credentials = chanConfig.credentials || {};
+
+                body = `
+                    <p class="mb-lg">Configure <strong>Email</strong> (SendGrid).</p>
+                    <div class="form-group">
+                         <label class="form-label">SendGrid API Key</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="setupApiKey" value="${credentials.api_key || ''}" placeholder="SG.xxxxxxx">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('setupApiKey')"><i data-lucide="eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">From Email</label>
+                        <input type="email" class="form-input" id="setupFromEmail" value="${credentials.from_email || ''}" placeholder="noreply@...">
+                    </div>
+                `;
+                footer = `
+                    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="submitChannelSetup('email')">Save Configuration</button>
+                `;
+            } else if (feature.name === 'calendar' || feature.name === 'google_sheets') {
+                // Google Integrations
+                let gStatus = { connected: false };
+                try {
+                    gStatus = await API.get('/auth/google/status');
+                } catch (e) { }
+
+                if (gStatus.connected) {
+                    body = `
+                        <div class="text-center p-lg">
+                            <div class="stat-icon green mx-auto mb-md"><i data-lucide="check-circle"></i></div>
+                            <h3>Connected to Google</h3>
+                            <p class="text-muted mb-lg">Your Google Account is linked.</p>
+                            <button class="btn btn-danger btn-sm" onclick="disconnectGoogle()">Disconnect Google Account</button>
+                        </div>
+                    `;
+                    footer = `<button class="btn btn-primary" onclick="closeModal()">Done</button>`;
+                } else {
+                    body = `
+                        <div class="text-center p-lg">
+                            <div class="stat-icon blue mx-auto mb-md"><i data-lucide="globe"></i></div>
+                            <h3>Connect Google Account</h3>
+                            <p class="text-muted mb-lg">Link your account to access Calendar and Sheets.</p>
+                            <button class="btn btn-primary w-full" onclick="startGoogleAuth()">Connect with Google</button>
+                        </div>
+                    `;
+                    footer = `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>`;
+                }
+
+            } else if (feature.name === 'paypal') {
+                // PayPal (Generic API Key storage in company settings via llm-config route usually, using a specific key?)
+                // Assuming we can save to company keys. We'll fetch company API keys.
+                let apiKeys = {};
+                try {
+                    const res = await API.get('/companies/llm-config');
+                    if (res.api_keys) apiKeys = res.api_keys;
+                } catch (e) { }
+
+                body = `
+                    <p class="mb-lg">Configure <strong>PayPal</strong> credentials.</p>
+                    <div class="form-group">
+                        <label class="form-label">Client ID</label>
+                        <input type="text" class="form-input" id="ppClientId" value="${apiKeys.paypal_client_id || ''}" placeholder="Client ID">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Client Secret</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="ppClientSecret" value="${apiKeys.paypal_client_secret || ''}" placeholder="Client Secret">
+                            <button class="btn btn-icon" type="button" onclick="togglePassword('ppClientSecret')"><i data-lucide="eye"></i></button>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label class="form-label">Mode</label>
+                        <select class="form-select" id="ppMode">
+                            <option value="sandbox" ${apiKeys.paypal_mode === 'sandbox' ? 'selected' : ''}>Sandbox</option>
+                            <option value="live" ${apiKeys.paypal_mode === 'live' ? 'selected' : ''}>Live</option>
+                        </select>
+                    </div>
+                `;
+                footer = `
+                    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="submitPayPalSetup()">Save Configuration</button>
+                `;
+
+            } else if (feature.name === 'crm_sync') {
+                // CRM Sync (HubSpot)
+                let apiKeys = {};
+                try {
+                    const res = await API.get('/companies/llm-config');
+                    if (res.api_keys) apiKeys = res.api_keys;
+                } catch (e) { }
+
+                if (apiKeys.hubspot_access_token) {
+                    body = `
+                        <div class="text-center p-lg">
+                            <div class="stat-icon green mx-auto mb-md"><i data-lucide="check-circle"></i></div>
+                            <h3>Connected to HubSpot</h3>
+                            <p class="text-muted mb-sm">Portal ID: ${apiKeys.hubspot_portal_id || 'Unknown'}</p>
+                            <p class="text-muted mb-lg">Your HubSpot CRM is linked. Contacts and deals will sync.</p>
+                            <button class="btn btn-secondary btn-sm" onclick="startHubSpotAuth()">Reconnect</button>
+                        </div>
+                    `;
+                    footer = `<button class="btn btn-primary" onclick="closeModal()">Done</button>`;
+                } else {
+                    body = `
+                        <div class="text-center p-lg">
+                            <div class="stat-icon orange mx-auto mb-md"><i data-lucide="database"></i></div>
+                            <h3>Connect HubSpot CRM</h3>
+                            <p class="text-muted mb-lg">Link your HubSpot account to sync contacts, deals, and notes.</p>
+                            <button class="btn btn-primary w-full" onclick="startHubSpotAuth()">Connect with HubSpot</button>
+                        </div>
+                    `;
+                    footer = `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>`;
+                }
+
+            } else {
+                // Generic Fallback
+                body = `
+                    <p class="mb-lg">Configure connection settings for <strong>${feature.label}</strong>.</p>
+                    <div class="text-center p-lg text-muted">
+                        No specific configuration available.
+                    </div>
+                `;
+                footer = `
+                    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+                `;
+            }
+
+            // Update modal
+            const modalBody = document.querySelector('.modal-body');
+            const modalFooter = document.querySelector('.modal-footer');
+            if (modalBody) modalBody.innerHTML = body;
+            if (modalFooter) modalFooter.innerHTML = footer;
+
+            // Re-run toggle logic if needed
+            if (feature.name === 'voice_calls') toggleSetupVoiceFields();
+            lucide.createIcons();
+
+        } catch (e) {
+            console.error(e);
+            openModal('Error', '<p>Failed to load configuration.</p>', '<button class="btn" onclick="closeModal()">Close</button>');
+        }
+    }
+
+    // Helper to submit generic channel setup
+    function toggleSetupWhatsAppFields() {
+        const provider = document.getElementById('setupWhatsAppProvider').value;
+        if (provider === 'meta') {
+            document.getElementById('setupTwilioWAFields').style.display = 'none';
+            document.getElementById('setupMetaWAFields').style.display = 'block';
+        } else {
+            document.getElementById('setupTwilioWAFields').style.display = 'block';
+            document.getElementById('setupMetaWAFields').style.display = 'none';
+        }
+    }
+
+    async function submitChannelSetup(type) {
+        let credentials = {};
+        let provider = 'twilio'; // Default
+
+        if (type === 'email') {
+            const apiKey = getSecretValue('setupApiKey');
+            credentials = {
+                from_email: document.getElementById('setupFromEmail').value
+            };
+            if (apiKey) credentials.api_key = apiKey;
+            // provider assumed sendgrid or handled by backend for email if simplified
+        } else if (type === 'whatsapp') {
+            provider = document.getElementById('setupWhatsAppProvider').value;
+            if (provider === 'meta') {
+                const token = getSecretValue('setupMetaToken');
+                credentials = {
+                    phone_number_id: document.getElementById('setupMetaPhoneId').value,
+                    waba_id: document.getElementById('setupMetaWabaId').value,
+                    verify_token: document.getElementById('setupMetaVerify').value,
+                    phone_number: document.getElementById('setupMetaDisplayPhone').value
+                };
+                if (token) credentials.access_token = token;
+            } else {
+                // Twilio
+                const authToken = getSecretValue('setupTwilioToken');
+                credentials = {
+                    account_sid: document.getElementById('setupTwilioSid').value,
+                    phone_number: document.getElementById('setupTwilioPhone').value
+                };
+                if (authToken) credentials.auth_token = authToken;
+            }
+        } else {
+            // SMS
+            const authToken = getSecretValue('setupAuthToken');
+            credentials = {
+                account_sid: document.getElementById('setupAccountSid').value,
+                phone_number: document.getElementById('setupPhoneNumber').value
+            };
+            if (authToken) credentials.auth_token = authToken;
+        }
+
+        try {
+            await API.post('/channels/connect', {
+                type,
+                provider,
+                credentials
+            });
+            closeModal();
+            showToast(`${type} configuration saved!`, 'success');
+        } catch (e) {
+            showToast('Error saving configuration', 'error');
+        }
+    }
+
+    // Helper for PayPal
+    async function submitPayPalSetup() {
+        const clientSecret = getSecretValue('ppClientSecret');
+        const payload = {
+            paypal_client_id: document.getElementById('ppClientId').value,
+            paypal_mode: document.getElementById('ppMode').value
+        };
+        if (clientSecret) payload.paypal_client_secret = clientSecret;
+        // We'll use the company update endpoint. Since we don't have a direct 'update keys' endpoint, 
+        // we can use the llm-config one or similar if it merges keys. 
+        // Based on previous analysis, /companies/llm-config takes api_keys.
+
+        try {
+            // First fetch existing to not overwrite others
+            let currentKeys = {};
+            try {
+                const res = await API.get('/companies/llm-config');
+                if (res.api_keys) currentKeys = res.api_keys;
+            } catch (e) { }
+
+            const newKeys = { ...currentKeys, ...payload };
+
+            await API.put('/companies/llm-config', {
+                api_keys: newKeys
+            });
+            closeModal();
+            showToast('PayPal configuration saved!', 'success');
+        } catch (e) {
+            showToast('Error saving PayPal config', 'error');
+        }
+    }
+
+    // Helper for Google
+    async function startGoogleAuth() {
+        try {
+            const res = await API.get('/auth/google/login');
+            if (res.url) {
+                window.location.href = res.url;
+            }
+        } catch (e) {
+            showToast('Error starting Google Auth', 'error');
+        }
+    }
+
+    async function disconnectGoogle() {
+        if (!confirm('Are you sure you want to disconnect Google?')) return;
+        try {
+            await API.post('/auth/google/disconnect', {});
+            closeModal();
+            showToast('Google disconnected', 'success');
+        } catch (e) {
+            showToast('Error disconnecting Google', 'error');
+        }
+    }
+
+    async function startHubSpotAuth() {
+        try {
+            const currentPath = window.location.pathname;
+            const res = await API.get(`/auth/hubspot/authorize?next=${encodeURIComponent(currentPath)}`);
+            if (res.auth_url) {
+                window.location.href = res.auth_url;
+            } else {
+                showToast('Error getting HubSpot authorization URL', 'error');
+            }
+        } catch (e) {
+            showToast('Failed to connect to HubSpot', 'error');
+        }
+    }
+
+    function toggleSetupVoiceFields() {
+        const provider = document.getElementById('setupVoiceProvider').value;
+        if (provider === 'livekit') {
+            document.getElementById('setupTwilioFields').style.display = 'none';
+            document.getElementById('setupLiveKitFields').style.display = 'block';
+        } else {
+            document.getElementById('setupTwilioFields').style.display = 'block';
+            document.getElementById('setupLiveKitFields').style.display = 'none';
+        }
+    }
+
+    async function submitVoiceSetup() {
+        const provider = document.getElementById('setupVoiceProvider').value;
+        let credentials = {};
+
+        if (provider === 'livekit') {
+            const lkSecret = getSecretValue('setupLiveKitSecret');
+            credentials = {
+                livekit_url: document.getElementById('setupLiveKitUrl').value,
+                livekit_api_key: document.getElementById('setupLiveKitKey').value,
+                livekit_caller_id: document.getElementById('setupLiveKitCallerId').value
+            };
+            if (lkSecret) credentials.livekit_api_secret = lkSecret;
+        } else {
+            const authToken = getSecretValue('setupAuthToken');
+            credentials = {
+                account_sid: document.getElementById('setupAccountSid').value,
+                phone_number: document.getElementById('setupPhoneNumber').value
+            };
+            if (authToken) credentials.auth_token = authToken;
+        }
+
+        try {
+            // Save Channel Config
+            await API.post('/channels/connect', {
+                type: 'voice',
+                provider: provider,
+                credentials: credentials
+            });
+
+            // Also update the current agent's provider preference
+            if (currentAgentId) {
+                await API.put(`/agents/${currentAgentId}`, {
+                    telephony_provider: provider
+                });
+                // Update UI dropdown
+                document.getElementById('agentTelephony').value = provider;
+            }
+
+            closeModal();
+            showToast('Voice configuration saved!', 'success');
+        } catch (e) {
+            showToast('Error saving voice configuration', 'error');
+        }
+    }
+
+    async function saveAgentConfig() {
+        if (!currentAgentId) return;
+
+        const name = document.getElementById('agentName').value;
+        const tone = document.querySelector('input[name="tone"]:checked')?.value || 'professional';
+        const objective = document.getElementById('agentObjective').value;
+        const telephony_provider = document.getElementById('agentTelephony').value;
+        const systemPrompt = document.getElementById('personalityPrompt').value;
+
+        try {
+            await API.put(`/agents/${currentAgentId}`, {
+                name,
+                tone,
+                objective,
+                telephony_provider: telephony_provider || null,
+                system_prompt: systemPrompt
+            });
+
+            showToast('Agent configuration saved!', 'success');
+            loadAgents(); // Refresh agent list
+        } catch (e) {
+            showToast('Error saving configuration', 'error');
+        }
+    }
+
+    async function toggleAgentActive() {
+        if (!currentAgentId) return;
+
+        const isActive = document.getElementById('agentActive').checked;
+
+        try {
+            await API.put(`/agents/${currentAgentId}`, {
+                is_active: isActive
+            });
+            showToast(isActive ? 'Agent activated' : 'Agent deactivated', 'success');
+        } catch (e) {
+            showToast('Error updating agent status', 'error');
+        }
+    }
+
+    function createAgent() {
+        const body = `
+            <div class="form-group">
+                <label class="form-label">Agent Name</label>
+                <input type="text" class="form-input" id="newAgentName" placeholder="e.g., Sales Assistant">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="newAgentDesc" placeholder="What will this agent do?"></textarea>
+            </div>
+        `;
+
+        const footer = `
+            <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitCreateAgent()">Create Agent</button>
+        `;
+
+        openModal('Create New Agent', body, footer);
+    }
+
+    async function submitCreateAgent() {
+        const name = document.getElementById('newAgentName').value;
+        const description = document.getElementById('newAgentDesc').value;
+
+        if (!name) {
+            showToast('Please enter an agent name', 'error');
+            return;
+        }
+
+        try {
+            const data = await API.post('/agents/', {
+                name,
+                description
+            });
+
+            closeModal();
+            showToast('Agent created successfully!', 'success');
+
+            await loadAgents();
+
+            // Select the new agent
+            document.getElementById('agentSelect').value = data.agent.id;
+            loadAgentFeatures();
+        } catch (e) {
+            showToast('Error creating agent', 'error');
+        }
+    }
+
+    async function deleteAgent() {
+        if (!currentAgentId) return;
+
+        if (!confirm('Are you sure you want to delete this agent? This cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await API.delete(`/agents/${currentAgentId}`);
+            showToast('Agent deleted', 'success');
+            currentAgentId = null;
+            loadAgents();
+            document.getElementById('agentSelect').value = '';
+            loadAgentFeatures();
+        } catch (e) {
+            showToast('Error deleting agent', 'error');
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAgents();
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

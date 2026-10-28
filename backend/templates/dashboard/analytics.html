@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Aikrofy{% endblock %}
+{% block header_title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="analytics-page">
+    <!-- Date Range Filter -->
+    <div class="card mb-lg">
+        <div class="card-body">
+            <div class="flex items-center gap-lg">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Time Period</label>
+                    <select class="form-select" id="dateRange" onchange="loadAnalytics()">
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" onclick="loadAnalytics()">
+                    <i data-lucide="refresh-cw"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversation Stats -->
+    <div class="stats-grid mb-lg">
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i data-lucide="message-circle"></i>
+            </div>
+            <div class="stat-value" id="totalConversations">0</div>
+            <div class="stat-label">Total Conversations</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <div class="stat-value" id="resolutionRate">0%</div>
+            <div class="stat-label">Resolution Rate</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i data-lucide="users"></i>
+            </div>
+            <div class="stat-value" id="totalCustomers">0</div>
+            <div class="stat-label">Total Customers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i data-lucide="target"></i>
+            </div>
+            <div class="stat-value" id="conversionRate">0%</div>
+            <div class="stat-label">Conversion Rate</div>
+        </div>
+    </div>
+
+    <!-- Charts Grid Row 1 -->
+    <div
+        style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+        <!-- Conversations Over Time -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Conversations Over Time</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="conversationsChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- Channel Distribution -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">By Channel</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="channelChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid Row 2 -->
+    <div
+        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+        <!-- Sentiment Distribution Removed -->
+
+        <!-- Sales Funnel -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Sales Funnel</h3>
+            </div>
+            <div class="card-body">
+                <div class="funnel" id="funnelContainer">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid Row 3: Additional Analytics -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+        <!-- Conversation Type -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Conversation Types</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="typeChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Quick Stats Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Key Insights</h3>
+            </div>
+            <div class="card-body">
+                <div class="insights-list">
+                    <div class="insight-item">
+                        <div class="insight-icon green">
+                            <i data-lucide="calendar-check"></i>
+                        </div>
+                        <div class="insight-content">
+                            <div class="insight-value" id="appointmentsInsight">0</div>
+                            <div class="insight-label">Appointments Scheduled</div>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-icon teal">
+                            <i data-lucide="dollar-sign"></i>
+                        </div>
+                        <div class="insight-content">
+                            <div class="insight-value" id="revenueInsight">$0</div>
+                            <div class="insight-label">Total Revenue</div>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-icon purple">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div class="insight-content">
+                            <div class="insight-value" id="uniqueCustomersInsight">0</div>
+                            <div class="insight-label">Unique Customers</div>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-icon orange">
+                            <i data-lucide="clock"></i>
+                        </div>
+                        <div class="insight-content">
+                            <div class="insight-value" id="avgMessagesInsight">0</div>
+                            <div class="insight-label">Avg Messages/Conversation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .funnel {
+        display: flex;
+        gap: var(--spacing-md);
+        align-items: flex-end;
+        height: 180px;
+        padding: var(--spacing-lg) 0;
+    }
+
+    .funnel-stage {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .funnel-bar {
+        width: 100%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: var(--radius) var(--radius) 0 0;
+        transition: height var(--transition);
+    }
+
+    .funnel-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-align: center;
+    }
+
+    .funnel-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .insights-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .insight-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-sm) 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .insight-item:last-child {
+        border-bottom: none;
+    }
+
+    .insight-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .insight-icon.green {
+        background: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+    }
+
+    .insight-icon.teal {
+        background: rgba(26, 188, 156, 0.2);
+        color: #1abc9c;
+    }
+
+    .insight-icon.purple {
+        background: rgba(99, 102, 241, 0.2);
+        color: #6366f1;
+    }
+
+    .insight-icon.orange {
+        background: rgba(243, 156, 18, 0.2);
+        color: #f39c12;
+    }
+
+    .insight-content {
+        flex: 1;
+    }
+
+    .insight-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .insight-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let conversationsChart = null;
+    let channelChart = null;
+    let sentimentChart = null;
+    let typeChart = null;
+
+    async function loadAnalytics() {
+        const days = document.getElementById('dateRange').value;
+
+        try {
+            // Load conversation stats
+            const convData = await API.get(`/analytics/conversations?days=${days}`);
+
+            // Update charts
+            updateConversationsChart(convData.daily || []);
+            updateChannelChart(convData.by_channel || []);
+            updateTypeChart(convData.by_type || []);
+
+            // Resolution Rate
+            const resRate = convData.resolution_rate || 0;
+            document.getElementById('resolutionRate').textContent = Math.round(resRate) + '%';
+
+            // Total conversations
+            const total = (convData.daily || []).reduce((sum, d) => sum + d.count, 0);
+            document.getElementById('totalConversations').textContent = total;
+
+            // Load funnel data
+            const funnelData = await API.get(`/analytics/funnel?days=${days}`);
+            updateFunnel(funnelData.funnel || []);
+            document.getElementById('conversionRate').textContent = Math.round(funnelData.conversion_rate || 0) + '%';
+
+            // Load Customers (Replacing Sentiment)
+            const customerData = await API.get('/analytics/customers');
+            document.getElementById('totalCustomers').textContent = customerData.count || 0;
+
+            // Removed Sentiment Logic as per request
+            /* 
+            const sentimentData = await API.get(`/analytics/sentiment?days=${days}`);
+            ...
+            */
+
+            // Still loading sentiment chart? If endpoint exists. If not, chart stays empty.
+            // updateSentimentChart(sentimentData.distribution || {});
+
+            // updateSentimentChart(sentimentData.distribution || {});
+
+            // Load summary for insights
+            const summaryData = await API.get(`/analytics/summary?days=${days}`);
+            document.getElementById('appointmentsInsight').textContent = summaryData.appointments || 0;
+            const revenue = summaryData.total_revenue || 0;
+            document.getElementById('revenueInsight').textContent = '$' + revenue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+            // Unique customers (approximation: total conversations with customer type)
+            const customerConvs = (convData.by_type || []).find(t => t.type === 'customer');
+            document.getElementById('uniqueCustomersInsight').textContent = customerConvs ? customerConvs.count : total;
+
+            // Avg messages per conversation (approximation)
+            document.getElementById('avgMessagesInsight').textContent = total > 0 ? '~5' : '0';
+
+        } catch (e) {
+            console.log('Error loading analytics:', e);
+        }
+    }
+
+    function updateConversationsChart(data) {
+        const ctx = document.getElementById('conversationsChart').getContext('2d');
+
+        if (conversationsChart) conversationsChart.destroy();
+
+        conversationsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.date),
+                datasets: [{
+                    label: 'Conversations',
+                    data: data.map(d => d.count),
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.1)' } }
+                }
+            }
+        });
+    }
+
+    function updateChannelChart(data) {
+        const ctx = document.getElementById('channelChart').getContext('2d');
+        if (channelChart) channelChart.destroy();
+
+        const colors = {
+            whatsapp: '#25D366', voice: '#6366f1', sms: '#3b82f6',
+            email: '#f59e0b', webchat: '#10b981', admin_chat: '#9b59b6'
+        };
+
+        channelChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.map(d => d.channel),
+                datasets: [{
+                    data: data.map(d => d.count),
+                    backgroundColor: data.map(d => colors[d.channel] || '#94a3b8')
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'right' } } }
+        });
+    }
+
+    function updateTypeChart(data) {
+        const ctx = document.getElementById('typeChart').getContext('2d');
+        if (typeChart) typeChart.destroy();
+
+        const colors = { customer: '#10b981', admin: '#6366f1', employee: '#f59e0b', internal: '#9b59b6' };
+
+        typeChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.map(d => d.type.charAt(0).toUpperCase() + d.type.slice(1)),
+                datasets: [{
+                    data: data.map(d => d.count),
+                    backgroundColor: data.map(d => colors[d.type] || '#94a3b8')
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'right' } } }
+        });
+    }
+
+    function updateSentimentChart(distribution) {
+        const ctx = document.getElementById('sentimentChart').getContext('2d');
+        if (sentimentChart) sentimentChart.destroy();
+
+        const positive = distribution.positive || 0;
+        const neutral = distribution.neutral || 0;
+        const negative = distribution.negative || 0;
+        const total = positive + neutral + negative;
+
+        if (total === 0) {
+            document.getElementById('sentimentNote').style.display = 'block';
+            // Show empty state
+            ctx.font = '14px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.textAlign = 'center';
+            ctx.fillText('No sentiment data yet', ctx.canvas.width / 2, ctx.canvas.height / 2);
+            return;
+        }
+
+        document.getElementById('sentimentNote').style.display = 'none';
+
+        sentimentChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Positive 😊', 'Neutral 😐', 'Negative 😟'],
+                datasets: [{
+                    data: [positive, neutral, negative],
+                    backgroundColor: ['#2ecc71', '#95a5a6', '#e74c3c'],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'right' } } }
+        });
+    }
+
+    function updateFunnel(data) {
+        const container = document.getElementById('funnelContainer');
+        const maxCount = Math.max(...data.map(d => d.count), 1);
+
+        container.innerHTML = data.map(stage => {
+            const height = (stage.count / maxCount) * 120 + 20;
+            const shortLabel = stage.stage
+                .replace(' (Meetings)', '')
+                .replace(' (Payment Links)', '')
+                .replace(' (Sales)', '')
+                .replace('Total ', '');
+            return `
+                <div class="funnel-stage">
+                    <div class="funnel-value">${stage.count}</div>
+                    <div class="funnel-bar" style="height: ${height}px;"></div>
+                    <div class="funnel-label">${shortLabel}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAnalytics();
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

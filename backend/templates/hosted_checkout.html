@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Seguro - {{ company_name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #0b0c10;
+            --bg-card: #151821;
+            --border-card: #262b3a;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --accent: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+            background-image: 
+                radial-gradient(circle at top center, rgba(99, 102, 241, 0.12) 0%, transparent 70%),
+                radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.08) 0%, transparent 60%);
+        }
+
+        .checkout-container {
+            max-width: 480px;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px var(--primary-glow);
+            overflow: hidden;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid var(--border-card);
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #a5b4fc;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .company-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .secure-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .body {
+            padding: 24px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 24px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border-card);
+        }
+
+        .summary-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .amount-total {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .currency-badge {
+            font-size: 14px;
+            font-weight: 700;
+            color: #818cf8;
+            margin-left: 4px;
+        }
+
+        .payment-notice {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #c7d2fe;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #paypal-button-container {
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .loader {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-card);
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .footer svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="brand-badge">Portal de Pago Oficial</div>
+            <h1 class="company-title">{{ company_name }}</h1>
+            <div class="secure-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Conexión Encriptada SSL de 256 bits</span>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="body">
+            <!-- Order Summary -->
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span class="summary-label">Concepto</span>
+                    <span class="summary-value">{{ description }}</span>
+                </div>
+                {% if customer_name %}
+                <div class="summary-row">
+                    <span class="summary-label">Cliente</span>
+                    <span class="summary-value">{{ customer_name }}</span>
+                </div>
+                {% endif %}
+                <div class="summary-row">
+                    <span class="summary-label">Total a Pagar</span>
+                    <div>
+                        <span class="amount-total">{{ amount }}</span>
+                        <span class="currency-badge">{{ currency }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notice about Card / Guest Option -->
+            <div class="payment-notice">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="shrink: 0;">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                <span>
+                    <strong>Paga con Tarjeta o PayPal:</strong> Puedes usar cualquier tarjeta de débito o crédito directamente sin necesidad de tener cuenta de PayPal.
+                </span>
+            </div>
+
+            <!-- PayPal Smart Buttons Container -->
+            <div id="paypal-button-container">
+                <div class="loader" id="loading-placeholder">
+                    <div class="spinner"></div>
+                    Cargando pasarela de pago segura...
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <svg viewBox="0 0 24 24">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+            </svg>
+            <span>Procesado de forma directa en la cuenta comercial del vendedor.</span>
+        </div>
+    </div>
+
+    <!-- Load PayPal SDK dynamically using company's Client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id={{ client_id }}&currency={{ currency }}&intent=capture&components=buttons,funding-eligibility&enable-funding=card&disable-funding=credit,paylater"></script>
+    <script>
+        const placeholder = document.getElementById('loading-placeholder');
+        if (placeholder) placeholder.style.display = 'none';
+
+        paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'black',
+                shape: 'rect',
+                label: 'pay',
+                height: 48,
+                tagline: false
+            },
+            createOrder: function(data, actions) {
+                return fetch('/api/payments/checkout/{{ idempotency_key }}/create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(orderData) {
+                    if (orderData.order_id) {
+                        return orderData.order_id;
+                    } else {
+                        alert(orderData.error || 'No se pudo iniciar la transacción.');
+                        throw new Error(orderData.error);
+                    }
+                });
+            },
+            onApprove: function(data, actions) {
+                return fetch('/api/payments/checkout/{{ idempotency_key }}/capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: data.orderID })
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(captureData) {
+                    if (captureData.success) {
+                        window.location.href = captureData.redirect_url || '/api/payments/success?cid={{ company_id }}&token=' + data.orderID;
+                    } else {
+                        alert('Error al confirmar el pago: ' + (captureData.error || 'Por favor intente nuevamente'));
+                    }
+                });
+            },
+            onError: function(err) {
+                console.error('Error en PayPal Buttons:', err);
+            }
+        }).render('#paypal-button-container');
+    </script>
+</body>
+</html>
